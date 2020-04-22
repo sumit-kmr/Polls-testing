@@ -358,7 +358,7 @@ public class LoginActivity extends AppCompatActivity {
         userData.put("POLL_COINS", 10);
         userData.put("SHARE_COIN", 0);
         userData.put("DEVICE_ID", deviceId);
-        userData.put("PAYTM_NMBER", mMobileNumber);
+        userData.put("PAYTM_NUMBER", mMobileNumber);
         userData.put("PHONE_NUMBER", mMobileNumber);
         userData.put("REFERRED_BY", "Nobody");
         userData.put("MONEY_REQUESTED", false);

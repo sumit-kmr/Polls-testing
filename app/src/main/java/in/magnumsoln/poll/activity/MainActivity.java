@@ -41,8 +41,7 @@ public class MainActivity extends AppCompatActivity {
         setupNavigationView();
         toolbarTitle.setText("Polls");
         nCoins.setText(" X "+mSharedPreferences.getLong("poll_coins",0)+"");
-        fragmentManager.beginTransaction()
-                .replace(R.id.frame,dashboardFragment).commit();
+        fragmentManager.beginTransaction().replace(R.id.frame,dashboardFragment).commit();
     }
 
     private void setupNavigationView() {
@@ -51,8 +50,7 @@ public class MainActivity extends AppCompatActivity {
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 switch(item.getItemId()){
                     case R.id.home :
-                        fragmentManager.beginTransaction()
-                                .replace(R.id.frame,dashboardFragment).commit();
+                        fragmentManager.beginTransaction().replace(R.id.frame,dashboardFragment).commit();
                         break;
                     case R.id.profile:
                         fragmentManager.beginTransaction()
@@ -67,5 +65,15 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         nCoins.setText(" X "+mSharedPreferences.getLong("poll_coins",10));
+    }
+
+    @Override
+    public void onBackPressed() {
+        if(!(fragmentManager.findFragmentById(R.id.frame) instanceof DashboardFragment)){
+            fragmentManager.beginTransaction().replace(R.id.frame,dashboardFragment).commit();
+            bottomNavigationView.getMenu().getItem(0).setChecked(true);
+        }else{
+            super.onBackPressed();
+        }
     }
 }
