@@ -1,0 +1,20 @@
+<resources>
+    <string name="app_name">Poll</string>
+    <string name="latest_questions">Latest Questions</string>
+    <string name="popular_topics">Popular Topics</string>
+    <string name="this_is_a_question">This is a question</string>
+    <string name="home">Home</string>
+    <string name="my_profile">My Profile</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="b">B.</string>
+    <string name="a">A.</string>
+    <string name="c">C.</string>
+    <string name="d">D.</string>
+    <string name="_91">+91</string>
+    <string name="enter_mobile_number">Enter Mobile Number</string>
+    <string name="ok">OK</string>
+    <string name="enter_otp">Enter OTP</string>
+    <string name="please_wait">Please wait...</string>
+</resources>

@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "76377648012",
+    "firebase_url": "https://polls-testing-d7856.firebaseio.com",
+    "project_id": "polls-testing-d7856",
+    "storage_bucket": "polls-testing-d7856.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:76377648012:android:ee4952d26a8555839904a9",
+        "android_client_info": {
+          "package_name": "in.magnumsoln.poll"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "76377648012-q2i41l2e7vnghad9cic4ipihdncsqkq0.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "in.magnumsoln.poll",
+            "certificate_hash": "99f068eaf91a61def6d80d9be41f4f648b2663a7"
+          }
+        },
+        {
+          "client_id": "76377648012-p15291up8fnmr11r8nmanscjs9di14i4.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC_LOMrXxOUidxp8H5CuXHTnk__w9caCAc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "76377648012-p15291up8fnmr11r8nmanscjs9di14i4.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
