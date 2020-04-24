@@ -35,7 +35,7 @@ public class CategoryActivity extends AppCompatActivity {
         coins = findViewById(R.id.txtCoins_category);
         mSharedPreference = getSharedPreferences("user_details",Context.MODE_PRIVATE);
         context = this;
-        coins.setText(" X "+getSharedPreferences("user_details",Context.MODE_PRIVATE).getLong("poll_coins",10));
+        coins.setText(" X "+mSharedPreference.getInt("available_coins",10));
         title = getIntent().getStringExtra("category_name");
         txtTitle.setText(title);
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
@@ -56,7 +56,7 @@ public class CategoryActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        coins.setText(" X "+mSharedPreference.getLong("poll_coins",10));
+        coins.setText(" X "+mSharedPreference.getInt("available_coins",10));
     }
 
 }

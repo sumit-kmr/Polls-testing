@@ -67,7 +67,8 @@ public class ClosedFragment extends Fragment implements FinishFetchingDataCallba
         closedRecyclerView.setAdapter(adapter);
         closed_refresh.setRefreshing(false);
         recycler_container.setVisibility(View.VISIBLE);
-        no_polls.setVisibility(View.GONE);
+        int visibility = (closedPolls.size() == 0) ? View.VISIBLE: View.GONE;
+        no_polls.setVisibility(visibility);
         loading.setVisibility(View.GONE);
         return null;
     }

@@ -105,12 +105,14 @@ public class CustomDialogReferredId extends Dialog implements android.view.View.
                     Toast.makeText(activity,"Invalid refer id",Toast.LENGTH_SHORT).show();
                 }else{
                     progressBar.setVisibility(View.VISIBLE);
+                    referIdContainer.setVisibility(View.GONE);
                     mFirestore.collection("USER").whereEqualTo("PHONE_NUMBER",enteredReferId).get()
                             .addOnFailureListener(new OnFailureListener() {
                                 @Override
                                 public void onFailure(@NonNull Exception e) {
                                     Toast.makeText(activity,"Some error occured. Try again",Toast.LENGTH_SHORT).show();
                                     progressBar.setVisibility(View.GONE);
+                                    referIdContainer.setVisibility(View.VISIBLE);
                                 }
                             }).addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
                         @Override
@@ -118,6 +120,7 @@ public class CustomDialogReferredId extends Dialog implements android.view.View.
                             if(queryDocumentSnapshots.isEmpty()){
                                 Toast.makeText(activity,"Invalid refer id",Toast.LENGTH_SHORT).show();
                                 progressBar.setVisibility(View.GONE);
+                                referIdContainer.setVisibility(View.VISIBLE);
                             }else{
                                 DocumentSnapshot curr_doc = queryDocumentSnapshots.getDocuments().get(0);
                                 String refer_id = (String) curr_doc.get("REFERRED_BY");
@@ -126,11 +129,13 @@ public class CustomDialogReferredId extends Dialog implements android.view.View.
                                    refer_id.equalsIgnoreCase(paytmNumber)){
                                     Toast.makeText(activity,"Invalid refer id",Toast.LENGTH_SHORT).show();
                                     progressBar.setVisibility(View.GONE);
+                                    referIdContainer.setVisibility(View.VISIBLE);
                                     return;
                                 }
                                 else if(share_coin > 100){
                                     Toast.makeText(activity,"Your friend has crossed max. refer limit",Toast.LENGTH_SHORT).show();
                                     progressBar.setVisibility(View.GONE);
+                                    referIdContainer.setVisibility(View.VISIBLE);
                                 }else{
                                     mFirestore.collection("USER").document(curr_doc.getId())
                                             .update("SHARE_COIN",share_coin+5)
@@ -138,6 +143,7 @@ public class CustomDialogReferredId extends Dialog implements android.view.View.
                                                 @Override
                                                 public void onFailure(@NonNull Exception e) {
                                                     progressBar.setVisibility(View.GONE);
+                                                    referIdContainer.setVisibility(View.VISIBLE);
                                                     Toast.makeText(activity,"Some error occured. Try again",Toast.LENGTH_SHORT).show();
                                                 }
                                             })
@@ -171,6 +177,8 @@ public class CustomDialogReferredId extends Dialog implements android.view.View.
                                                                                 @Override
                                                                                 public void onFailure(@NonNull Exception e) {
                                                                                     Toast.makeText(activity,"Some error occured",Toast.LENGTH_SHORT).show();
+                                                                                    referIdContainer.setVisibility(View.VISIBLE);
+                                                                                    progressBar.setVisibility(View.GONE);
 
                                                                                 }
                                                                             })
@@ -178,9 +186,9 @@ public class CustomDialogReferredId extends Dialog implements android.view.View.
                                                                                 @Override
                                                                                 public void onSuccess(Void aVoid) {
                                                                                     referIdContainer.setVisibility(View.GONE);
-                                                                                    dialogErrorContainer.setVisibility(View.VISIBLE);
                                                                                     errorMessage.setText("Congratulations!! 5 coins added to wallet");
                                                                                     progressBar.setVisibility(View.GONE);
+                                                                                    dialogErrorContainer.setVisibility(View.VISIBLE);
                                                                                     referredDialogCallback.referComplete(share_coin+5,enteredReferId);
                                                                                 }
                                                                             });

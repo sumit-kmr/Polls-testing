@@ -2,6 +2,8 @@ package in.magnumsoln.poll.activity;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -100,6 +102,7 @@ public class LoginActivity extends AppCompatActivity {
         mSharedPreferences = getSharedPreferences("user_details", Context.MODE_PRIVATE);
         isLoggedIn =  mSharedPreferences.getBoolean("login", false);
 
+        setupNotificationChannel();
         // check min_support_version of the app
         checkSupportedVersion();
 
@@ -113,6 +116,15 @@ public class LoginActivity extends AppCompatActivity {
         setupMobileOkButton();
         setupOtpOkButton();
         setupCallback();
+    }
+
+    private void setupNotificationChannel() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            int importance = NotificationManager.IMPORTANCE_DEFAULT;
+            NotificationChannel channel = new NotificationChannel("notification", "notification", importance);
+            NotificationManager notificationManager = getSystemService(NotificationManager.class);
+            notificationManager.createNotificationChannel(channel);
+        }
     }
 
     private void setupCarouselView() {
@@ -153,7 +165,8 @@ public class LoginActivity extends AppCompatActivity {
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
-                        showAlertDialog();
+                        Toast.makeText(context, "Some error occured", Toast.LENGTH_SHORT).show();
+                        finish();
                     }
                 });
     }
@@ -314,7 +327,10 @@ public class LoginActivity extends AppCompatActivity {
                             // login
                             String mob_no = (String) queryDocumentSnapshots.getDocuments().get(0).getString("PHONE_NUMBER");
                             long poll_coins = (long) queryDocumentSnapshots.getDocuments().get(0).get("POLL_COINS");
-                            mSharedPreferences.edit().putLong("poll_coins", poll_coins).apply();
+                            long share_coins = (long) queryDocumentSnapshots.getDocuments().get(0).get("SHARE_COIN");
+                            long used_coins = (long) queryDocumentSnapshots.getDocuments().get(0).get("COINS_USED");
+                            int available_coins =  (int)poll_coins + (int)share_coins - (int)used_coins;
+                            mSharedPreferences.edit().putInt("available_coins", available_coins).apply();
                             mSharedPreferences.edit().putString("phone_no", mob_no).apply();
                             mSharedPreferences.edit().putBoolean("login", true).apply();
                             updateDeviceId(queryDocumentSnapshots.getDocuments().get(0).getId());
@@ -362,13 +378,14 @@ public class LoginActivity extends AppCompatActivity {
         userData.put("PHONE_NUMBER", mMobileNumber);
         userData.put("REFERRED_BY", "Nobody");
         userData.put("MONEY_REQUESTED", false);
+        userData.put("COINS_USED",0);
         mFirestore.collection("USER")
                 .add(userData)
                 .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
                     @Override
                     public void onSuccess(DocumentReference documentReference) {
                         Intent intent = new Intent(currentActivity, MainActivity.class);
-                        mSharedPreferences.edit().putLong("poll_coins", 10).apply();
+                        mSharedPreferences.edit().putInt("available_coins", 10).apply();
                         mSharedPreferences.edit().putString("phone_no", mMobileNumber).apply();
                         mSharedPreferences.edit().putBoolean("login", true).apply();
                         Toast.makeText(context, "Signed in successfully", Toast.LENGTH_SHORT).show();

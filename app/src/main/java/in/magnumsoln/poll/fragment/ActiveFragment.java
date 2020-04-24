@@ -66,7 +66,8 @@ public class ActiveFragment extends Fragment implements FinishFetchingDataCallba
         recyclerView.setAdapter(adapter);
         active_refresh.setRefreshing(false);
         recycler_container.setVisibility(View.VISIBLE);
-        no_polls.setVisibility(View.GONE);
+        int visibility = (activePolls.size() == 0) ? View.VISIBLE: View.GONE;
+        no_polls.setVisibility(visibility);
         loading.setVisibility(View.GONE);
         return null;
     }

@@ -26,9 +26,11 @@ public class PollFetcher {
         polls = new ArrayList<>();
     }
 
+    final Date currentDate = Calendar.getInstance().getTime();
+
     public void fetchLatestPolls(final FinishFetchingDataCallback finishFetchingData) {
         db.collection("POLL")
-                .whereEqualTo("STATUS", "OPEN")
+                .whereLessThanOrEqualTo("START_TIME",currentDate)
                 .orderBy("START_TIME", Query.Direction.DESCENDING)
                 .limit(5)
                 .get()
@@ -44,20 +46,25 @@ public class PollFetcher {
                                 Timestamp start = (Timestamp) documentSnapshot.get("START_TIME");
                                 Timestamp close = (Timestamp) documentSnapshot.get("CLOSE_TIME");
                                 Timestamp declare = (Timestamp) documentSnapshot.get("DECLARE_TIME");
-                                polls.add(new Poll(
-                                        documentSnapshot.getId(),
-                                        (String) documentSnapshot.get("QUESTION"),
-                                        (String) documentSnapshot.get("TOPIC"),
-                                        start.toDate(),
-                                        close.toDate(),
-                                        declare.toDate(),
-                                        (String) documentSnapshot.get("STATUS"),
-                                        (String) documentSnapshot.get("IMAGE_URL"),
-                                        (String) documentSnapshot.get("SHARE_URL"),
-                                        (List<String>) documentSnapshot.get("OPTIONS"),
-                                        (long) documentSnapshot.get("CORRECT_OPTION"),
-                                        (long) documentSnapshot.get("REWARD_AMOUNT")
-                                ));
+                                if((close==null) || (close.toDate().after(currentDate))) {
+                                    Date start_ = start.toDate();
+                                    Date close_ = (close == null) ? null : close.toDate();
+                                    Date declare_ = (declare == null) ? null : declare.toDate();
+                                    polls.add(new Poll(
+                                            documentSnapshot.getId(),
+                                            (String) documentSnapshot.get("QUESTION"),
+                                            (String) documentSnapshot.get("TOPIC"),
+                                            start_,
+                                            close_,
+                                            declare_,
+                                            "OPEN",
+                                            (String) documentSnapshot.get("IMAGE_URL"),
+                                            (String) documentSnapshot.get("SHARE_URL"),
+                                            (List<String>) documentSnapshot.get("OPTIONS"),
+                                            (long) documentSnapshot.get("CORRECT_OPTION"),
+                                            (long) documentSnapshot.get("REWARD_AMOUNT")
+                                    ));
+                                }
                             }
                             finishFetchingData.onFinish(polls, "POLL");
                         }
@@ -108,7 +115,7 @@ public class PollFetcher {
     public void fetchActivePolls(final FinishFetchingDataCallback finishFetchingDataCallback, String topic) {
         db.collection("POLL")
                 .whereEqualTo("TOPIC", topic)
-                .whereEqualTo("STATUS","OPEN")
+                .whereLessThanOrEqualTo("START_TIME",currentDate)
                 .orderBy("START_TIME", Query.Direction.ASCENDING).get()
                 .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
                     @Override
@@ -122,20 +129,25 @@ public class PollFetcher {
                                 Timestamp start = (Timestamp) documentSnapshot.get("START_TIME");
                                 Timestamp close = (Timestamp) documentSnapshot.get("CLOSE_TIME");
                                 Timestamp declare = (Timestamp) documentSnapshot.get("DECLARE_TIME");
-                                polls.add(new Poll(
-                                        documentSnapshot.getId(),
-                                        (String) documentSnapshot.get("QUESTION"),
-                                        (String) documentSnapshot.get("TOPIC"),
-                                        start.toDate(),
-                                        close.toDate(),
-                                        declare.toDate(),
-                                        (String) documentSnapshot.get("STATUS"),
-                                        (String) documentSnapshot.get("IMAGE_URL"),
-                                        (String) documentSnapshot.get("SHARE_URL"),
-                                        (List<String>) documentSnapshot.get("OPTIONS"),
-                                        (long) documentSnapshot.get("CORRECT_OPTION"),
-                                        (long) documentSnapshot.get("REWARD_AMOUNT")
-                                ));
+                                if((close==null) || (close.toDate().after(currentDate))) {
+                                    Date start_ = start.toDate();
+                                    Date close_ = (close == null) ? null : close.toDate();
+                                    Date declare_ = (declare == null) ? null : declare.toDate();
+                                    polls.add(new Poll(
+                                            documentSnapshot.getId(),
+                                            (String) documentSnapshot.get("QUESTION"),
+                                            (String) documentSnapshot.get("TOPIC"),
+                                            start_,
+                                            close_,
+                                            declare_,
+                                            "OPEN",
+                                            (String) documentSnapshot.get("IMAGE_URL"),
+                                            (String) documentSnapshot.get("SHARE_URL"),
+                                            (List<String>) documentSnapshot.get("OPTIONS"),
+                                            (long) documentSnapshot.get("CORRECT_OPTION"),
+                                            (long) documentSnapshot.get("REWARD_AMOUNT")
+                                    ));
+                                }
                             }
                             finishFetchingDataCallback.onFinish(polls,"POLL");
                         }
@@ -146,7 +158,7 @@ public class PollFetcher {
     public void fetchClosedPolls(final FinishFetchingDataCallback finishFetchingDataCallback, String topic) {
         db.collection("POLL")
                 .whereEqualTo("TOPIC", topic)
-                .whereEqualTo("STATUS","CLOSED")
+                .whereLessThanOrEqualTo("CLOSE_TIME",currentDate)
                 .orderBy("CLOSE_TIME", Query.Direction.ASCENDING).get()
                 .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
                     @Override
@@ -160,20 +172,25 @@ public class PollFetcher {
                                 Timestamp start = (Timestamp) documentSnapshot.get("START_TIME");
                                 Timestamp close = (Timestamp) documentSnapshot.get("CLOSE_TIME");
                                 Timestamp declare = (Timestamp) documentSnapshot.get("DECLARE_TIME");
-                                polls.add(new Poll(
-                                        documentSnapshot.getId(),
-                                        (String) documentSnapshot.get("QUESTION"),
-                                        (String) documentSnapshot.get("TOPIC"),
-                                        start.toDate(),
-                                        close.toDate(),
-                                        declare.toDate(),
-                                        (String) documentSnapshot.get("STATUS"),
-                                        (String) documentSnapshot.get("IMAGE_URL"),
-                                        (String) documentSnapshot.get("SHARE_URL"),
-                                        (List<String>) documentSnapshot.get("OPTIONS"),
-                                        (long) documentSnapshot.get("CORRECT_OPTION"),
-                                        (long) documentSnapshot.get("REWARD_AMOUNT")
-                                ));
+                                if((declare == null) || (declare.toDate().after(currentDate))) {
+                                    Date start_ = start.toDate();
+                                    Date close_ = close.toDate();
+                                    Date declare_ = (declare == null) ? null : declare.toDate();
+                                    polls.add(new Poll(
+                                            documentSnapshot.getId(),
+                                            (String) documentSnapshot.get("QUESTION"),
+                                            (String) documentSnapshot.get("TOPIC"),
+                                            start_,
+                                            close_,
+                                            declare_,
+                                            "CLOSED",
+                                            (String) documentSnapshot.get("IMAGE_URL"),
+                                            (String) documentSnapshot.get("SHARE_URL"),
+                                            (List<String>) documentSnapshot.get("OPTIONS"),
+                                            (long) documentSnapshot.get("CORRECT_OPTION"),
+                                            (long) documentSnapshot.get("REWARD_AMOUNT")
+                                    ));
+                                }
                             }
                             finishFetchingDataCallback.onFinish(polls,"POLL");
                         }
@@ -187,7 +204,7 @@ public class PollFetcher {
         System.out.println("minDate : "+minDate);
         db.collection("POLL")
                 .whereEqualTo("TOPIC", topic)
-                .whereEqualTo("STATUS","DECLARED")
+                .whereLessThanOrEqualTo("DECLARE_TIME",currentDate)
                 .whereGreaterThanOrEqualTo("DECLARE_TIME",minDate)
                 .orderBy("DECLARE_TIME", Query.Direction.ASCENDING).get()
                 .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
@@ -209,7 +226,7 @@ public class PollFetcher {
                                         start.toDate(),
                                         close.toDate(),
                                         declare.toDate(),
-                                        (String) documentSnapshot.get("STATUS"),
+                                        "DECLARED",
                                         (String) documentSnapshot.get("IMAGE_URL"),
                                         (String) documentSnapshot.get("SHARE_URL"),
                                         (List<String>) documentSnapshot.get("OPTIONS"),

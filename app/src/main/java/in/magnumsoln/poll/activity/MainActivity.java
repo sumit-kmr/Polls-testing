@@ -40,7 +40,7 @@ public class MainActivity extends AppCompatActivity {
         profileFragment = new ProfileFragment(nCoins);
         setupNavigationView();
         toolbarTitle.setText("Polls");
-        nCoins.setText(" X "+mSharedPreferences.getLong("poll_coins",0)+"");
+        nCoins.setText(" X "+mSharedPreferences.getInt("available_coins",0)+"");
         fragmentManager.beginTransaction().replace(R.id.frame,dashboardFragment).commit();
     }
 
@@ -64,7 +64,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        nCoins.setText(" X "+mSharedPreferences.getLong("poll_coins",10));
+        nCoins.setText(" X "+mSharedPreferences.getInt("available_coins",10));
     }
 
     @Override

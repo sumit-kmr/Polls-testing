@@ -67,7 +67,8 @@ public class DeclaredFragment extends Fragment implements FinishFetchingDataCall
         declaredRecyclerView.setAdapter(adapter);
         declared_refresh.setRefreshing(false);
         recycler_container.setVisibility(View.VISIBLE);
-        no_polls.setVisibility(View.GONE);
+        int visibility = (declaredPolls.size() == 0) ? View.VISIBLE: View.GONE;
+        no_polls.setVisibility(visibility);
         loading.setVisibility(View.GONE);
         return null;
     }

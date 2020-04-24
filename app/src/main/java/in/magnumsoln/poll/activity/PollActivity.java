@@ -42,7 +42,7 @@ public class PollActivity extends AppCompatActivity {
     private FirebaseFirestore mFirestore;
     private Poll currentPoll;
     private Context context;
-    private long pollCoins = 0;
+    private long availableCoins = 0;
     private boolean isPollUnlocked;
     private String userId;
     private int adLimitsLeft;
@@ -233,10 +233,10 @@ public class PollActivity extends AppCompatActivity {
         d.setText(currentPoll.getOPTIONS().get(3));
         Picasso.get().load(currentPoll.getIMAGE_URL()).error(R.drawable.sample).into(imgPollImage);
 
-        pollCoins = mSharedPreference.getLong("poll_coins", 10);
-        nCoins.setText(" X " + pollCoins);
+        availableCoins = mSharedPreference.getInt("available_coins", 10);
+        nCoins.setText(" X " + availableCoins);
         // setup coin buttons
-        if (pollCoins == 0) {
+        if (availableCoins == 0) {
             coinButton2.setForeground(getDrawable(R.drawable.foreground_disabled));
             coinButton2.setEnabled(false);
             coinButton.setForeground(getDrawable(disabled_foreground));
@@ -313,17 +313,31 @@ public class PollActivity extends AppCompatActivity {
     }
 
     private void performCoinButtonUnlock() {
-        pollCoins--;
-        mSharedPreference.edit().putLong("poll_coins", pollCoins).apply();
-        nCoins.setText(" X " + pollCoins);
-        mFirestore.collection("USER").document(userId).update("POLL_COINS", pollCoins)
+        availableCoins--;
+        mSharedPreference.edit().putInt("available_coins", (int)availableCoins).apply();
+        nCoins.setText(" X " + availableCoins);
+        mFirestore.collection("USER").document(userId).get()
+                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                    @Override
+                    public void onSuccess(DocumentSnapshot documentSnapshot) {
+                        long coins_used = (long) documentSnapshot.get("COINS_USED");
+                        mFirestore.collection("USER").document(userId).update("COINS_USED", coins_used+1)
+                                .addOnFailureListener(new OnFailureListener() {
+                                    @Override
+                                    public void onFailure(@NonNull Exception e) {
+                                        errorOccured();
+                                        return;
+                                    }
+                                });
+                    }
+                })
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
-                        errorOccured();
-                        return;
+                        Toast.makeText(context,"Some error occured",Toast.LENGTH_SHORT).show();
                     }
                 });
+
         mSharedPreference.edit().putBoolean(currentPoll.getPOLL_ID(), true).apply();
         popupCardView.setVisibility(View.GONE);
         enableScrollView();
@@ -354,7 +368,7 @@ public class PollActivity extends AppCompatActivity {
                             errorOccured();
                             return;
                         }
-                        String poll_status = (String) documentSnapshot.get("STATUS");
+                        String poll_status = (String) getIntent().getStringExtra("poll_status");
                         if (poll_status.equalsIgnoreCase("OPEN")) {
                             //OPEN
                             if (isPollUnlocked) {
@@ -639,9 +653,12 @@ public class PollActivity extends AppCompatActivity {
                             return;
                         }
                         DocumentSnapshot currentDocument = queryDocumentSnapshots.getDocuments().get(0);
-                        pollCoins = (long) currentDocument.get("POLL_COINS");
-                        nCoins.setText(" X " + pollCoins);
-                        mSharedPreference.edit().putLong("poll_coins", pollCoins).apply();
+                        long used_coins = (long) currentDocument.get("COINS_USED");
+                        long share_coins = (long) currentDocument.get("SHARE_COIN");
+                        long poll_coins = (long) currentDocument.get("POLL_COINS");
+                        availableCoins = poll_coins + share_coins - used_coins;
+                        nCoins.setText(" X " + availableCoins);
+                        mSharedPreference.edit().putInt("available_coins", (int)availableCoins).apply();
                         userId = currentDocument.getId();
                         checkPollStatus();
                     }
@@ -680,7 +697,7 @@ public class PollActivity extends AppCompatActivity {
     private void setupToolbar() {
         toolbar = findViewById(R.id.pollToolbar);
         nCoins = findViewById(R.id.txtCoins_poll);
-        nCoins.setText(" X " + mSharedPreference.getLong("poll_coins", 0));
+        nCoins.setText(" X " + mSharedPreference.getInt("available_coins", 0));
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -692,7 +709,7 @@ public class PollActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        nCoins.setText(" X " + mSharedPreference.getLong("poll_coins", 10));
+        nCoins.setText(" X " + mSharedPreference.getInt("available_coins", 10));
     }
 
     public String getEmojiByUnicode(int unicode) {

@@ -22,6 +22,7 @@ import com.synnapps.carouselview.CarouselView;
 import com.synnapps.carouselview.ImageClickListener;
 import com.synnapps.carouselview.ViewListener;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import androidx.recyclerview.widget.DividerItemDecoration;
@@ -54,6 +55,7 @@ public class DashboardFragment extends Fragment implements FinishFetchingDataCal
     private Context context;
     private FinishFetchingDataCallback finishFetchingDataCallbackInterface;
     private SharedPreferences mSharedPreferences;
+    private TextView latestQuestion;
 
 
     public DashboardFragment() { }
@@ -70,6 +72,7 @@ public class DashboardFragment extends Fragment implements FinishFetchingDataCal
         swipeRefreshLayout = view.findViewById(R.id.swipeRefresher);
         shimmer = view.findViewById(R.id.shimmer);
         shimmerLayout = view.findViewById(R.id.shimmer_layout);
+        latestQuestion = view.findViewById(R.id.txtLatestQues);
         shimmer.startShimmer();
         mSharedPreferences = context.getSharedPreferences("user_details",Context.MODE_PRIVATE);
         pollsRecyclerView.setLayoutManager(new LinearLayoutManager(context));
@@ -102,6 +105,8 @@ public class DashboardFragment extends Fragment implements FinishFetchingDataCal
             polls = (List<Poll>) object;
             pollsRecyclerAdapter = new PollsRecyclerAdapter(context, polls);
             pollsRecyclerView.setAdapter(pollsRecyclerAdapter);
+            int visibility = (polls.size() == 0) ? View.GONE : View.VISIBLE;
+            latestQuestion.setVisibility(visibility);
         } else if (collectionType.equalsIgnoreCase("TOPIC")) {
             topics = (List<Topic>) object;
 
@@ -130,6 +135,12 @@ public class DashboardFragment extends Fragment implements FinishFetchingDataCal
 
     @Override
     public Object onFailed(Object object, String collectionType) {
+        if(collectionType.equalsIgnoreCase("POLL")){
+            polls = new ArrayList<>();
+            pollsRecyclerAdapter = new PollsRecyclerAdapter(context, polls);
+            pollsRecyclerView.setAdapter(pollsRecyclerAdapter);
+            latestQuestion.setVisibility(View.GONE);
+        }
         return null;
     }
 }

@@ -45,6 +45,7 @@ public class PollsRecyclerAdapter extends RecyclerView.Adapter<PollsRecyclerAdap
             public void onClick(View view) {
                 Intent intent = new Intent(context, PollActivity.class);
                 intent.putExtra("poll",polls.get(position));
+                intent.putExtra("poll_status",polls.get(position).getSTATUS());
                 context.startActivity(intent);
             }
         });
