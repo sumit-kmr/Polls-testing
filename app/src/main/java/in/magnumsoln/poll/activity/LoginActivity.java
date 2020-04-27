@@ -28,6 +28,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.ads.MobileAds;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -43,6 +44,7 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.messaging.FirebaseMessaging;
 import com.synnapps.carouselview.CarouselView;
 import com.synnapps.carouselview.ViewListener;
 
@@ -103,6 +105,7 @@ public class LoginActivity extends AppCompatActivity {
         isLoggedIn =  mSharedPreferences.getBoolean("login", false);
 
         setupNotificationChannel();
+        initializeAds();
         // check min_support_version of the app
         checkSupportedVersion();
 
@@ -118,6 +121,10 @@ public class LoginActivity extends AppCompatActivity {
         setupCallback();
     }
 
+    private void initializeAds() {
+        MobileAds.initialize(this);
+    }
+
     private void setupNotificationChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             int importance = NotificationManager.IMPORTANCE_DEFAULT;
@@ -125,6 +132,7 @@ public class LoginActivity extends AppCompatActivity {
             NotificationManager notificationManager = getSystemService(NotificationManager.class);
             notificationManager.createNotificationChannel(channel);
         }
+        FirebaseMessaging.getInstance().subscribeToTopic("newPoll");
     }
 
     private void setupCarouselView() {

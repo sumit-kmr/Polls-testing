@@ -28,12 +28,14 @@ dependencies {
     implementation 'com.google.firebase:firebase-firestore:21.4.2'   // firestore
     implementation 'com.google.firebase:firebase-auth:19.3.0'        // firebase authentication
     implementation 'com.google.firebase:firebase-messaging:20.1.5'   // firebase messaging
+    implementation 'com.google.firebase:firebase-dynamic-links:19.1.0'  // firebase dynamic links
     implementation 'androidx.recyclerview:recyclerview:1.1.0'        // recycler view
     implementation 'com.squareup.picasso:picasso:2.71828'            // picasso
     implementation 'com.synnapps:carouselview:0.1.5'                 // carousel view
     implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.0.0'   // swiperefresher
     implementation 'com.google.android.material:material:1.1.0'
     implementation 'com.facebook.shimmer:shimmer:0.5.0'               // facebook shimmer
+    implementation 'com.google.android.gms:play-services-ads:19.1.0'    //admob
     implementation 'androidx.appcompat:appcompat:1.1.0'
     implementation 'com.google.android.material:material:1.1.0'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'

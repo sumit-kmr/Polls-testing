@@ -10,6 +10,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.graphics.LightingColorFilter;
 import android.net.Uri;
 import android.os.Bundle;
 
@@ -40,6 +41,7 @@ import in.magnumsoln.poll.R;
 import in.magnumsoln.poll.activity.MainActivity;
 import in.magnumsoln.poll.util.CustomDialogChangePaytmNumber;
 import in.magnumsoln.poll.util.CustomDialogReferredId;
+import in.magnumsoln.poll.util.DemoDialog;
 
 import static android.content.Context.NOTIFICATION_SERVICE;
 
