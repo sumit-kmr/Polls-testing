@@ -42,6 +42,43 @@
           ]
         }
       }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:76377648012:android:5a285acba27aca139904a9",
+        "android_client_info": {
+          "package_name": "in.magnumsoln.pollstest"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "76377648012-ubmdaa4epupgt254eb1ti8ap8n3s4tfm.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "in.magnumsoln.pollstest",
+            "certificate_hash": "99f068eaf91a61def6d80d9be41f4f648b2663a7"
+          }
+        },
+        {
+          "client_id": "76377648012-p15291up8fnmr11r8nmanscjs9di14i4.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC_LOMrXxOUidxp8H5CuXHTnk__w9caCAc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "76377648012-p15291up8fnmr11r8nmanscjs9di14i4.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
     }
   ],
   "configuration_version": "1"

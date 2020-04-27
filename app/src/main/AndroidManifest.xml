@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="in.magnumsoln.poll">
+    package="in.magnumsoln.pollstest">
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
@@ -13,7 +13,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
 
-        <activity android:name=".activity.LoginActivity">
+        <activity android:name="in.magnumsoln.pollstest.activity.LoginActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -21,10 +21,10 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".activity.PollActivity"
+            android:name="in.magnumsoln.pollstest.activity.PollActivity"
             android:configChanges="orientation|screenSize" />
-        <activity android:name=".activity.CategoryActivity" />
-        <activity android:name=".activity.MainActivity" >
+        <activity android:name="in.magnumsoln.pollstest.activity.CategoryActivity" />
+        <activity android:name="in.magnumsoln.pollstest.activity.MainActivity" >
             <intent-filter>
                 <action android:name="android.intent.action.VIEW"/>
                 <category android:name="android.intent.category.DEFAULT"/>
@@ -39,7 +39,7 @@
         </activity>
 
         <service
-            android:name=".firebase.NotificationService"
+            android:name="in.magnumsoln.pollstest.firebase.NotificationService"
             android:enabled="true"
             android:exported="false">
             <intent-filter>
