@@ -7,49 +7,54 @@
     tools:context=".activity.LoginActivity">
 
     <LinearLayout
+        android:id="@+id/mobileContainer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:weightSum="10"
+        android:layout_marginTop="15dp"
         android:gravity="center"
+        android:orientation="horizontal"
         android:padding="5dp"
-        android:id="@+id/mobileContainer"
-        android:layout_marginTop="15dp">
+        android:weightSum="10">
+
         <TextView
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="@string/_91"
-            android:fontFamily="@font/comfortaa_semibold"
-            android:textSize="20sp"
+            android:layout_gravity="center_vertical"
             android:layout_weight="1"
-            android:layout_gravity="center_vertical"/>
+            android:fontFamily="@font/comfortaa_semibold"
+            android:text="@string/_91"
+            android:textColor="#000"
+            android:textSize="20sp" />
+
         <EditText
+            android:id="@+id/edtMobile"
             android:layout_width="0dp"
             android:layout_height="45dp"
-            android:layout_weight="6.5"
-            android:hint="@string/enter_mobile_number"
             android:layout_gravity="center_vertical"
-            android:id="@+id/edtMobile"
-            android:fontFamily="@font/comfortaa_bold"
+            android:layout_weight="6.5"
             android:background="@drawable/edit_text_background"
-            android:paddingStart="8dp"
+            android:focusable="true"
+            android:fontFamily="@font/comfortaa_bold"
+            android:hint="@string/enter_mobile_number"
             android:inputType="number"
             android:maxLength="10"
-            android:focusable="true"/>
+            android:paddingStart="8dp" />
+
         <Button
+            android:id="@+id/btnOkMobile"
             android:layout_width="0dp"
             android:layout_height="40dp"
-            android:layout_weight="1.6"
-            android:id="@+id/btnOkMobile"
-            android:text="@string/ok"
             android:layout_marginStart="8dp"
-            android:background="@drawable/ok_button_background"/>
+            android:layout_weight="1.6"
+            android:background="@drawable/ok_button_background"
+            android:text="@string/ok" />
+
         <ProgressBar
+            android:id="@+id/progress_bar_mobile"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:id="@+id/progress_bar_mobile"
-            android:layout_weight="1.6"
             android:layout_marginStart="8dp"
+            android:layout_weight="1.6"
             android:visibility="gone" />
     </LinearLayout>
 
@@ -57,93 +62,92 @@
         android:id="@+id/OtpContainer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:weightSum="10"
-        android:gravity="center"
-        android:padding="5dp"
         android:layout_below="@id/mobileContainer"
-        android:layout_marginTop="10dp">
-    <ImageView
-        android:layout_width="0dp"
-        android:layout_height="30dp"
-        android:src="@drawable/key"
-        android:layout_weight="1"
-        android:layout_gravity="center_vertical"
-        android:layout_marginEnd="5dp"
-        android:id="@+id/btnResendOtp"/>
-    <EditText
-        android:layout_width="0dp"
-        android:layout_height="45dp"
-        android:layout_weight="6.5"
-        android:hint="@string/enter_otp"
-        android:layout_gravity="center_vertical"
-        android:id="@+id/edtOtp"
-        android:fontFamily="@font/comfortaa_bold"
-        android:background="@drawable/edit_text_background"
-        android:paddingStart="8dp"
-        android:inputType="number"
-        android:maxLength="10"
-        android:focusable="true"/>
-    <Button
-        android:layout_width="0dp"
-        android:layout_height="40dp"
-        android:layout_weight="1.6"
-        android:id="@+id/btnOkOtp"
-        android:text="@string/ok"
-        android:layout_marginStart="8dp"
-        android:background="@drawable/ok_button_background"/>
+        android:layout_marginTop="10dp"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:padding="5dp"
+        android:weightSum="10">
+
+        <ImageView
+            android:id="@+id/btnResendOtp"
+            android:layout_width="0dp"
+            android:layout_height="30dp"
+            android:layout_gravity="center_vertical"
+            android:layout_marginEnd="5dp"
+            android:layout_weight="1"
+            android:src="@drawable/reload"
+            android:clickable="true"
+            android:focusable="true"
+            android:background="@drawable/share_background"
+            android:visibility="invisible"/>
+
+        <EditText
+            android:id="@+id/edtOtp"
+            android:layout_width="0dp"
+            android:layout_height="45dp"
+            android:layout_gravity="center_vertical"
+            android:layout_weight="6.5"
+            android:background="@drawable/edit_text_background"
+            android:focusable="true"
+            android:fontFamily="@font/comfortaa_bold"
+            android:hint="@string/enter_otp"
+            android:inputType="number"
+            android:maxLength="10"
+            android:paddingStart="8dp" />
+
+        <Button
+            android:id="@+id/btnOkOtp"
+            android:layout_width="0dp"
+            android:layout_height="40dp"
+            android:layout_marginStart="8dp"
+            android:layout_weight="1.6"
+            android:background="@drawable/ok_button_background"
+            android:text="@string/ok" />
+
         <ProgressBar
+            android:id="@+id/progress_bar_otp"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:id="@+id/progress_bar_otp"
-            android:layout_weight="1.6"
             android:layout_marginStart="8dp"
+            android:layout_weight="1.6"
             android:visibility="gone" />
     </LinearLayout>
 
+
     <TextView
+        android:id="@+id/txtTimer"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Resend OTP"
         android:layout_below="@id/OtpContainer"
         android:layout_centerHorizontal="true"
-        android:fontFamily="@font/comfortaa_bold"
-        android:textColor="@color/grey"
-        android:layout_marginTop="15dp"
-        android:id="@+id/txtresendOtp"
-        android:clickable="true"
-        android:focusable="true"
-        android:enabled="false"/>
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_toRightOf="@id/txtresendOtp"
-        android:text="00:59"
-        android:layout_below="@id/OtpContainer"
+        android:layout_marginLeft="20dp"
         android:layout_marginTop="15dp"
         android:fontFamily="@font/comfortaa_regular"
+        android:text="00:59"
         android:textColor="@color/red"
-        android:layout_marginLeft="20dp"
-        android:id="@+id/txtTimer"
-        android:visibility="gone"/>
+        android:visibility="invisible" />
 
     <com.synnapps.carouselview.CarouselView
+        android:id="@+id/loginCarouselView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@id/txtresendOtp"
+        android:layout_alignParentBottom="true"
         android:layout_margin="20dp"
-        android:id="@+id/loginCarouselView"
-        app:indicatorVisibility="gone"/>
+        app:indicatorVisibility="gone"
+        android:layout_below="@id/txtTimer"/>
 
     <RelativeLayout
+        android:id="@+id/mainProgressBar"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="#fff"
-        android:id="@+id/mainProgressBar">
+        android:background="#fff">
+
         <ProgressBar
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_centerInParent="true"/>
+            android:layout_centerInParent="true" />
     </RelativeLayout>
+
 
 </RelativeLayout>

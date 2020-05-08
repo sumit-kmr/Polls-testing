@@ -22,51 +22,59 @@ import in.magnumsoln.pollstest.model.Poll;
 public class NotificationService extends FirebaseMessagingService {
     @Override
     public void onMessageReceived(@NonNull RemoteMessage remoteMessage) {
-        super.onMessageReceived(remoteMessage);
-        System.out.println("Notification received................");
-        String pollId = remoteMessage.getData().get("pollId");
-        FirebaseFirestore.getInstance().collection("POLL")
-                .document(pollId)
-                .get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-            @Override
-            public void onSuccess(DocumentSnapshot documentSnapshot) {
-                Poll poll = new Poll(documentSnapshot.getId(),
-                        (String) documentSnapshot.get("QUESTION"),
-                        (String) documentSnapshot.get("TOPIC"),
-                        null,
-                        null,
-                        null,
-                        "OPEN" ,
-                        (String) documentSnapshot.get("IMAGE_URL"),
-                        (String) documentSnapshot.get("SHARE_URL"),
-                        (List<String>) documentSnapshot.get("OPTIONS"),
-                        (long) documentSnapshot.get("CORRECT_OPTION"),
-                        (long) documentSnapshot.get("REWARD_AMOUNT"));
-                showNotification(poll);
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
+        try {
+            super.onMessageReceived(remoteMessage);
+            System.out.println("Notification received........");
+            String pollId = remoteMessage.getData().get("pollId");
+            FirebaseFirestore.getInstance().collection("POLL")
+                    .document(pollId)
+                    .get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                @Override
+                public void onSuccess(DocumentSnapshot documentSnapshot) {
+                    Poll poll = new Poll(documentSnapshot.getId(),
+                            (String) documentSnapshot.get("QUESTION"),
+                            (String) documentSnapshot.get("TOPIC"),
+                            null,
+                            null,
+                            null,
+                            "OPEN",
+                            (String) documentSnapshot.get("IMAGE_URL"),
+                            (String) documentSnapshot.get("SHARE_URL"),
+                            (List<String>) documentSnapshot.get("OPTIONS"),
+                            -1,
+                            (long) documentSnapshot.get("REWARD_AMOUNT"));
+                    showNotification(poll);
+                }
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
 
-            }
-        });
+                }
+            });
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
     private void showNotification(Poll poll) {
-        Intent intent = new Intent(this, PollActivity.class);
-        intent.putExtra("poll",poll);
-        intent.putExtra("poll_status","OPEN");
-        intent.setAction("openPoll");
-        PendingIntent pi = PendingIntent.getActivity(this,0,intent,PendingIntent.FLAG_UPDATE_CURRENT);
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(this,"notification")
-                .setSmallIcon(R.drawable.tick)
-                .setContentTitle("New poll available!!")
-                .setContentText("Tap to open the poll")
-                .setColor(getColor(R.color.colorPrimaryDark))
-                .setContentIntent(pi)
-                .setAutoCancel(true);
-        NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-        notificationManager.notify(0,builder.build());
+        try {
+            Intent intent = new Intent(this, PollActivity.class);
+            intent.putExtra("poll", poll);
+            intent.putExtra("poll_status", "OPEN");
+            intent.setAction("openPoll");
+            PendingIntent pi = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+            NotificationCompat.Builder builder = new NotificationCompat.Builder(this, "notification")
+                    .setSmallIcon(R.drawable.tick)
+                    .setContentTitle("New poll available!!")
+                    .setContentText("Tap to open the poll")
+                    .setColor(getColor(R.color.colorPrimaryDark))
+                    .setContentIntent(pi)
+                    .setAutoCancel(true);
+            NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+            notificationManager.notify(0, builder.build());
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
 }

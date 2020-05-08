@@ -10,8 +10,29 @@
     <ImageView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:src="@drawable/sample"
         android:scaleType="fitXY"
         android:id="@+id/carouselImg"/>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/txtTopicLabel"
+        android:text="topic label"
+        android:layout_gravity="bottom|center_horizontal"
+        android:textColor="#fff"
+        android:textAlignment="center"
+        android:textSize="16sp"
+        android:textAllCaps="true"
+        android:fontFamily="@font/comfortaa_bold"
+        android:background="#000"
+        android:padding="5dp"/>
+    <com.facebook.shimmer.ShimmerFrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/caroselShimmerTopic">
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/grey"/>
+    </com.facebook.shimmer.ShimmerFrameLayout>
 
 </androidx.cardview.widget.CardView>

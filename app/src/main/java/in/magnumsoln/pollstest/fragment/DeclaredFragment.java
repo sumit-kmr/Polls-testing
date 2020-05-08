@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import androidx.fragment.app.Fragment;
@@ -63,6 +64,12 @@ public class DeclaredFragment extends Fragment implements FinishFetchingDataCall
     @Override
     public Object onFinish(Object object, String collection) {
         declaredPolls = (List<Poll>) object;
+        List<Poll> temp = new ArrayList<>();
+        for(int i=0;i<declaredPolls.size()&&i<10;i++){
+            temp.add(declaredPolls.get(i));
+        }
+        declaredPolls.clear();
+        declaredPolls.addAll(temp);
         adapter = new PollsRecyclerAdapter(getActivity(),declaredPolls);
         declaredRecyclerView.setAdapter(adapter);
         declared_refresh.setRefreshing(false);

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="300dp"
+    android:layout_height="200dp"
+    android:orientation="vertical"
+    android:gravity="center">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAlignment="center"
+        android:text="Your Requested Is Submitted. You will receive the amount within 7 working days."
+        android:fontFamily="@font/comfortaa_bold"
+        android:textColor="@color/colorAccent"
+        android:layout_gravity="center" />
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="35dp"
+        android:text="Okay"
+        android:background="@drawable/ok_button_background"
+        android:textAllCaps="false"
+        android:textColor="#fff"
+        android:gravity="center"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="35dp"
+        android:id="@+id/btnSuccessOk"/>
+</LinearLayout>

@@ -26,6 +26,16 @@
             android:layout_alignParentStart="true"
             android:scaleType="fitXY"
             android:src="@drawable/sample" />
+
+        <com.facebook.shimmer.ShimmerFrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/imgShimmerRecItem">
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@color/grey"/>
+        </com.facebook.shimmer.ShimmerFrameLayout>
     </androidx.cardview.widget.CardView>
 
     <TextView

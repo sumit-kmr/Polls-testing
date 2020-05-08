@@ -15,8 +15,10 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.facebook.shimmer.ShimmerFrameLayout;
+import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 import com.synnapps.carouselview.CarouselView;
 import com.synnapps.carouselview.ImageClickListener;
@@ -41,7 +43,7 @@ import in.magnumsoln.pollstest.model.Topic;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class DashboardFragment extends Fragment implements FinishFetchingDataCallback{
+public class DashboardFragment extends Fragment implements FinishFetchingDataCallback {
 
     private PollsRecyclerAdapter pollsRecyclerAdapter;
     private RecyclerView pollsRecyclerView;
@@ -57,7 +59,8 @@ public class DashboardFragment extends Fragment implements FinishFetchingDataCal
     private TextView latestQuestion;
 
 
-    public DashboardFragment() { }
+    public DashboardFragment() {
+    }
 
 
     @Override
@@ -73,7 +76,7 @@ public class DashboardFragment extends Fragment implements FinishFetchingDataCal
         shimmerLayout = view.findViewById(R.id.shimmer_layout);
         latestQuestion = view.findViewById(R.id.txtLatestQues);
         shimmer.startShimmer();
-        mSharedPreferences = context.getSharedPreferences("user_details",Context.MODE_PRIVATE);
+        mSharedPreferences = context.getSharedPreferences("user_details", Context.MODE_PRIVATE);
         pollsRecyclerView.setLayoutManager(new LinearLayoutManager(context));
         pollsRecyclerView.addItemDecoration(new DividerItemDecoration(pollsRecyclerView.getContext(), DividerItemDecoration.VERTICAL));
         new PollFetcher().fetchLatestPolls(finishFetchingDataCallbackInterface);
@@ -93,48 +96,70 @@ public class DashboardFragment extends Fragment implements FinishFetchingDataCal
             public void onClick(int position) {
 //                Toast.makeText(context,topics.get(position).getTOPIC_NAME(),Toast.LENGTH_SHORT).show();
                 startActivity(new Intent(context, CategoryActivity.class)
-                        .putExtra("category_name",topics.get(position).getTOPIC_NAME()));
+                        .putExtra("category_name", topics.get(position).getTOPIC_NAME()));
             }
         });
         return view;
     }
 
     public Object onFinish(Object object, String collectionType) {
-        if (collectionType.equalsIgnoreCase("POLL")) {
-            polls = (List<Poll>) object;
-            pollsRecyclerAdapter = new PollsRecyclerAdapter(context, polls);
-            pollsRecyclerView.setAdapter(pollsRecyclerAdapter);
-            int visibility = (polls.size() == 0) ? View.GONE : View.VISIBLE;
-            latestQuestion.setVisibility(visibility);
-        } else if (collectionType.equalsIgnoreCase("TOPIC")) {
-            topics = (List<Topic>) object;
+        try {
+            if (collectionType.equalsIgnoreCase("POLL")) {
+                polls = (List<Poll>) object;
+                pollsRecyclerAdapter = new PollsRecyclerAdapter(context, polls);
+                pollsRecyclerView.setAdapter(pollsRecyclerAdapter);
+                int visibility = (polls.size() == 0) ? View.GONE : View.VISIBLE;
+                latestQuestion.setVisibility(visibility);
+            } else if (collectionType.equalsIgnoreCase("TOPIC")) {
+                topics = (List<Topic>) object;
 
-            carouselView.setViewListener(new ViewListener() {
-                @Override
-                public View setViewForPosition(int position) {
-                    View view = getLayoutInflater().inflate(R.layout.carouselview_layout,null);
-                    ImageView img = view.findViewById(R.id.carouselImg);
-                    Picasso.get().load(topics.get(position).getIMAGE_URL()).placeholder(R.drawable.sample).error(R.drawable.sample).into(img);
-                    return view;
-                }
-            });
-            carouselView.setPageCount(topics.size());
-            swipeRefreshLayout.setRefreshing(false);
-            new Handler().postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    shimmer.stopShimmer();
-                    shimmerLayout.setVisibility(View.GONE);
-                }
-            },500);
+                carouselView.setViewListener(new ViewListener() {
+                    @Override
+                    public View setViewForPosition(int position) {
+                        View view = getLayoutInflater().inflate(R.layout.carouselview_layout, null);
+                        ImageView img = view.findViewById(R.id.carouselImg);
+                        final TextView topicName = view.findViewById(R.id.txtTopicLabel);
+                        final ShimmerFrameLayout carouselShimmer = view.findViewById(R.id.caroselShimmerTopic);
+                        topicName.setText(topics.get(position).getTOPIC_NAME());
+                        Picasso.get().load(topics.get(position).getIMAGE_URL()).resize(2048, 1600).onlyScaleDown()
+                                .error(R.drawable.sample).placeholder(R.drawable.sample)
+                                .into(img, new Callback() {
+                                    @Override
+                                    public void onSuccess() {
+                                        carouselShimmer.setVisibility(View.GONE);
+                                        topicName.setVisibility(View.GONE);
+                                    }
 
+                                    @Override
+                                    public void onError(Exception e) {
+                                        e.printStackTrace();
+                                        carouselShimmer.setVisibility(View.GONE);
+                                    }
+                                });
+                        return view;
+                    }
+                });
+                carouselView.setPageCount(topics.size());
+                swipeRefreshLayout.setRefreshing(false);
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        shimmer.stopShimmer();
+                        shimmerLayout.setVisibility(View.GONE);
+                    }
+                }, 500);
+
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+            Toast.makeText(context, "Some error occured", Toast.LENGTH_SHORT).show();
         }
         return null;
     }
 
     @Override
     public Object onFailed(Object object, String collectionType) {
-        if(collectionType.equalsIgnoreCase("POLL")){
+        if (collectionType.equalsIgnoreCase("POLL")) {
             polls = new ArrayList<>();
             pollsRecyclerAdapter = new PollsRecyclerAdapter(context, polls);
             pollsRecyclerView.setAdapter(pollsRecyclerAdapter);

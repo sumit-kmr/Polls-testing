@@ -30,10 +30,7 @@
                 <category android:name="android.intent.category.DEFAULT"/>
                 <category android:name="android.intent.category.BROWSABLE"/>
                 <data
-                    android:host="pollstest.com"
-                    android:scheme="https"/>
-                <data
-                    android:host="pollstest.com"
+                    android:host="polls.com"
                     android:scheme="https"/>
             </intent-filter>
         </activity>

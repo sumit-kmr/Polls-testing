@@ -13,6 +13,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.os.Handler;
 import android.provider.Settings;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -34,6 +35,7 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.FirebaseException;
+import com.google.firebase.FirebaseNetworkException;
 import com.google.firebase.FirebaseTooManyRequestsException;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
@@ -54,8 +56,10 @@ import java.util.concurrent.TimeUnit;
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 import in.magnumsoln.pollstest.BuildConfig;
 import in.magnumsoln.pollstest.R;
+import in.magnumsoln.pollstest.util.InternetChecker;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -72,15 +76,14 @@ public class LoginActivity extends AppCompatActivity {
     private PhoneAuthProvider.ForceResendingToken mResendToken;
     private ProgressBar progressBarMobile, progressBarOtp;
     private RelativeLayout mainProgressBar;
-    private TextView txtResendOtp,txtTimer;
+    private TextView txtTimer;
     private FirebaseFirestore mFirestore;
     private String mMobileNumber;
     private SharedPreferences mSharedPreferences;
     boolean isLoggedIn;
     private CarouselView carouselView;
-   private int[] images = {R.drawable.im1, R.drawable.im2, R.drawable.im3};
+    private int[] images = {R.drawable.im1, R.drawable.im2, R.drawable.im3};
 
-    @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -92,7 +95,6 @@ public class LoginActivity extends AppCompatActivity {
         btnResendOtp = findViewById(R.id.btnResendOtp);
         progressBarMobile = findViewById(R.id.progress_bar_mobile);
         progressBarOtp = findViewById(R.id.progress_bar_otp);
-        txtResendOtp = findViewById(R.id.txtresendOtp);
         txtTimer = findViewById(R.id.txtTimer);
         mainProgressBar = findViewById(R.id.mainProgressBar);
         carouselView = findViewById(R.id.loginCarouselView);
@@ -104,8 +106,6 @@ public class LoginActivity extends AppCompatActivity {
         mSharedPreferences = getSharedPreferences("user_details", Context.MODE_PRIVATE);
         isLoggedIn =  mSharedPreferences.getBoolean("login", false);
 
-        setupNotificationChannel();
-        initializeAds();
         // check min_support_version of the app
         checkSupportedVersion();
 
@@ -126,57 +126,80 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void setupNotificationChannel() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            int importance = NotificationManager.IMPORTANCE_DEFAULT;
-            NotificationChannel channel = new NotificationChannel("notification", "notification", importance);
-            NotificationManager notificationManager = getSystemService(NotificationManager.class);
-            notificationManager.createNotificationChannel(channel);
+        try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                int importance = NotificationManager.IMPORTANCE_DEFAULT;
+                NotificationChannel channel = new NotificationChannel("notification", "notification", importance);
+                NotificationManager notificationManager = getSystemService(NotificationManager.class);
+                notificationManager.createNotificationChannel(channel);
+            }
+            FirebaseMessaging.getInstance().subscribeToTopic("newPoll");
+        }catch(Exception e){
+            e.printStackTrace();
+            Toast.makeText(context, "Some error occured", Toast.LENGTH_SHORT).show();
         }
-        FirebaseMessaging.getInstance().subscribeToTopic("newPoll");
     }
 
     private void setupCarouselView() {
-        carouselView.setViewListener(new ViewListener() {
-            @Override
-            public View setViewForPosition(int position) {
-                View view = getLayoutInflater().inflate(R.layout.carouselview_layout,null);
-                ImageView img = view.findViewById(R.id.carouselImg);
-                img.setImageDrawable(getDrawable(images[position]));
-                return view;
-            }
-        });
-        carouselView.setPageCount(images.length);
+        try {
+            carouselView.setViewListener(new ViewListener() {
+                @Override
+                public View setViewForPosition(int position) {
+                    View view = getLayoutInflater().inflate(R.layout.carouselview_layout_login, null);
+                    ImageView img = view.findViewById(R.id.carouselImgLogin);
+                    img.setImageDrawable(getDrawable(images[position]));
+                    return view;
+                }
+            });
+            carouselView.setPageCount(images.length);
+        }catch(Exception e){
+            e.printStackTrace();
+            Toast.makeText(context, "Some error occured", Toast.LENGTH_SHORT).show();
+        }
     }
 
     private void checkSupportedVersion() {
-        mFirestore.collection("PROJECT_DATA").document("ANDROID").get()
-                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                    @Override
-                    public void onSuccess(DocumentSnapshot documentSnapshot) {
-                        String minSupportedVersion = (String) documentSnapshot.get("LAST_SUPPORTED_VERSION");
-                        String currentAppVersion = BuildConfig.VERSION_NAME;
-                        boolean adEnabled = (boolean) documentSnapshot.get("ADS_ENABLED");
-                        mSharedPreferences.edit().putBoolean("ads_enabled",adEnabled).apply();
-                        if(isCompatibleVersion(minSupportedVersion,currentAppVersion)){
+        try {
+            if(!InternetChecker.isInternetAvailable(context)){
+                Toast.makeText(context, "No internet ", Toast.LENGTH_SHORT).show();
+                showInternetDialog();
+                return;
+            }
 
-                            if (isLoggedIn) {
-                                startActivity(new Intent(currentActivity, MainActivity.class));
-                                finish();
-                            }else{
-                                mainProgressBar.setVisibility(View.GONE);
+            mFirestore.collection("PROJECT_DATA").document("ANDROID").get()
+                    .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                        @Override
+                        public void onSuccess(DocumentSnapshot documentSnapshot) {
+                            String minSupportedVersion = (String) documentSnapshot.get("LAST_SUPPORTED_VERSION");
+                            String currentAppVersion = BuildConfig.VERSION_NAME;
+                            boolean adEnabled = (boolean) documentSnapshot.get("ADS_ENABLED");
+                            mSharedPreferences.edit().putBoolean("ads_enabled", adEnabled).apply();
+                            if (isCompatibleVersion(minSupportedVersion, currentAppVersion)) {
+                                setupNotificationChannel();
+                                initializeAds();
+                                if (isLoggedIn) {
+                                    startActivity(new Intent(currentActivity, MainActivity.class));
+                                    finish();
+                                } else {
+                                    mainProgressBar.setVisibility(View.GONE);
+                                }
+                            } else {
+                                showVersionAlertDialog();
                             }
-                        }else{
-                            showAlertDialog();
                         }
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Toast.makeText(context, "Some error occured", Toast.LENGTH_SHORT).show();
-                        finish();
-                    }
-                });
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            Toast.makeText(context, "Some error occured", Toast.LENGTH_SHORT).show();
+                            mainProgressBar.setVisibility(View.GONE);
+//                            finish();
+                        }
+                    });
+        }catch(Exception e){
+            e.printStackTrace();
+            Toast.makeText(context, "Some error occured", Toast.LENGTH_SHORT).show();
+        }
     }
 
     private boolean isCompatibleVersion(String supportedVersion, String currentVersion) {
@@ -208,6 +231,7 @@ public class LoginActivity extends AppCompatActivity {
                     PhoneAuthCredential credential = mAuth.getCredential(mVerificationId, edtOtp.getText().toString());
                     signInWithPhoneAuthCredential(credential);
                 } catch (Exception e) {
+                    e.printStackTrace();
                     Toast.makeText(context, "Some error occured. Please try again", Toast.LENGTH_SHORT).show();
                     reset();
                     edtMobile.setText(null);
@@ -219,7 +243,6 @@ public class LoginActivity extends AppCompatActivity {
     private void setupCallback() {
         mCallbacks = new PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
 
-            @RequiresApi(api = Build.VERSION_CODES.M)
             @Override
             public void onVerificationCompleted(PhoneAuthCredential credential) {
                 hideMobileProgressBar();
@@ -227,7 +250,6 @@ public class LoginActivity extends AppCompatActivity {
                 signInWithPhoneAuthCredential(credential);
             }
 
-            @RequiresApi(api = Build.VERSION_CODES.M)
             @Override
             public void onVerificationFailed(FirebaseException e) {
                 Log.w(TAG, "onVerificationFailed", e);
@@ -238,12 +260,13 @@ public class LoginActivity extends AppCompatActivity {
                 } else if (e instanceof FirebaseTooManyRequestsException) {
                     Log.w(TAG, "Firebase request exeeded limits");
                     Toast.makeText(context, "Some error occured", Toast.LENGTH_SHORT).show();
+                    reset();
+                }else if(e instanceof FirebaseNetworkException){
+                    Toast.makeText(context, "Internet unavailable", Toast.LENGTH_SHORT).show();
+                    reset();
                 }
-                reset();
-                edtMobile.setText("");
+//                edtMobile.setText("");
             }
-
-            @RequiresApi(api = Build.VERSION_CODES.M)
             @Override
             public void onCodeSent(@NonNull String verificationId,
                                    @NonNull final PhoneAuthProvider.ForceResendingToken token) {
@@ -255,8 +278,10 @@ public class LoginActivity extends AppCompatActivity {
                 hideMobileProgressBar();
                 showMobileOkButton();
                 txtTimer.setVisibility(View.VISIBLE);
-                txtResendOtp.setTextColor(getColor(R.color.grey));
-                txtResendOtp.setEnabled(false);
+                //txtResendOtp.setTextColor(getColor(R.color.grey));
+                //txtResendOtp.setEnabled(false);
+                btnResendOtp.setVisibility(View.INVISIBLE);
+                btnResendOtp.setEnabled(false);
                 new CountDownTimer(30000,1000){
 
                     @Override
@@ -269,8 +294,8 @@ public class LoginActivity extends AppCompatActivity {
 
                     @Override
                     public void onFinish() {
-                        txtTimer.setVisibility(View.GONE);
-                        txtResendOtp.setEnabled(true);
+                        txtTimer.setVisibility(View.INVISIBLE);
+                       /* txtResendOtp.setEnabled(true);
                         txtResendOtp.setTextColor(Color.parseColor("#228B22"));
                         txtResendOtp.setOnClickListener(new View.OnClickListener() {
                             @Override
@@ -280,6 +305,17 @@ public class LoginActivity extends AppCompatActivity {
                                 txtResendOtp.setEnabled(false);
                                 txtResendOtp.setTextColor(getColor(R.color.grey));
                             }
+                        });  */
+                        btnResendOtp.setVisibility(View.VISIBLE);
+                        btnResendOtp.setEnabled(true);
+                        btnResendOtp.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                mAuth.verifyPhoneNumber("+91" + mMobileNumber, 30,
+                                        TimeUnit.SECONDS, currentActivity, mCallbacks,token);
+                                btnResendOtp.setVisibility(View.INVISIBLE);
+                                btnResendOtp.setEnabled(false);
+                            }
                         });
                     }
                 }.start();
@@ -287,132 +323,145 @@ public class LoginActivity extends AppCompatActivity {
         };
     }
 
-    @Override
-    public void onBackPressed() {
-        finishAffinity();
-        System.exit(0);
-    }
-
-    @RequiresApi(api = Build.VERSION_CODES.M)
     private void signInWithPhoneAuthCredential(PhoneAuthCredential credential) {
         hideOtpOkButton();
         disableOtpTextField();
         showOtpProgressBar();
-        firebaseAuth.signInWithCredential(credential)
-                .addOnCompleteListener(currentActivity, new OnCompleteListener<AuthResult>() {
-                    @RequiresApi(api = Build.VERSION_CODES.M)
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        if (task.isSuccessful()) {
-                            loginOrSignup();
+        try {
+            firebaseAuth.signInWithCredential(credential)
+                    .addOnCompleteListener(currentActivity, new OnCompleteListener<AuthResult>() {
+                        @RequiresApi(api = Build.VERSION_CODES.M)
+                        @Override
+                        public void onComplete(@NonNull Task<AuthResult> task) {
+                            if (task.isSuccessful()) {
+                                loginOrSignup();
+                            }
                         }
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
 //                        Toast.makeText(context, "Some error occuredABC", Toast.LENGTH_SHORT).show();
-                        Toast.makeText(context, "Invalid OTP", Toast.LENGTH_SHORT).show();
-                        System.out.println("B");
-                        hideOtpProgressBar();
-                        showOtpOkButton();
-                        enableOtpOkButton();
-                        enableOtpTextField();
-                    }
-                });
+                            Toast.makeText(context, "Invalid OTP", Toast.LENGTH_SHORT).show();
+                            System.out.println("B");
+                            hideOtpProgressBar();
+                            showOtpOkButton();
+                            enableOtpOkButton();
+                            enableOtpTextField();
+                        }
+                    });
+        }catch(Exception e){
+            e.printStackTrace();
+            Toast.makeText(context, "Some error occured", Toast.LENGTH_SHORT).show();
+        }
     }
 
     private void loginOrSignup() {
-        mFirestore.collection("USER")
-                .whereEqualTo("PHONE_NUMBER", mMobileNumber).get()
-                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-                    @Override
-                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                        if (queryDocumentSnapshots.getDocuments().isEmpty()) {
-                            // signup
-                            signup();
-                        } else {
-                            // login
-                            String mob_no = (String) queryDocumentSnapshots.getDocuments().get(0).getString("PHONE_NUMBER");
-                            long poll_coins = (long) queryDocumentSnapshots.getDocuments().get(0).get("POLL_COINS");
-                            long share_coins = (long) queryDocumentSnapshots.getDocuments().get(0).get("SHARE_COIN");
-                            long used_coins = (long) queryDocumentSnapshots.getDocuments().get(0).get("COINS_USED");
-                            int available_coins =  (int)poll_coins + (int)share_coins - (int)used_coins;
-                            mSharedPreferences.edit().putInt("available_coins", available_coins).apply();
-                            mSharedPreferences.edit().putString("phone_no", mob_no).apply();
-                            mSharedPreferences.edit().putBoolean("login", true).apply();
-                            updateDeviceId(queryDocumentSnapshots.getDocuments().get(0).getId());
-                            startActivity(new Intent(currentActivity, MainActivity.class));
-                            finish();
+        try {
+            mFirestore.collection("USER")
+                    .whereEqualTo("PHONE_NUMBER", mMobileNumber).get()
+                    .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                        @Override
+                        public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                            if (queryDocumentSnapshots.getDocuments().isEmpty()) {
+                                // signup
+                                signup();
+                            } else {
+                                // login
+                                String mob_no = (String) queryDocumentSnapshots.getDocuments().get(0).getString("PHONE_NUMBER");
+                                long poll_coins = (long) queryDocumentSnapshots.getDocuments().get(0).get("POLL_COINS");
+                                long share_coins = (long) queryDocumentSnapshots.getDocuments().get(0).get("SHARE_COINS");
+                                long used_coins = (long) queryDocumentSnapshots.getDocuments().get(0).get("COINS_USED");
+                                long coins_redeemed = (long) queryDocumentSnapshots.getDocuments().get(0).get("COINS_REDEEMED");
+                                int available_coins = (int) poll_coins + (int) share_coins - (int) used_coins-(int)coins_redeemed;
+                                mSharedPreferences.edit().putInt("available_coins", available_coins).apply();
+                                mSharedPreferences.edit().putString("phone_no", mob_no).apply();
+                                mSharedPreferences.edit().putBoolean("login", true).apply();
+                                updateDeviceId(queryDocumentSnapshots.getDocuments().get(0).getId());
+                                startActivity(new Intent(currentActivity, MainActivity.class));
+                                finish();
+                            }
                         }
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @RequiresApi(api = Build.VERSION_CODES.M)
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Toast.makeText(context, "Some error occured. Try again", Toast.LENGTH_SHORT).show();
-                        reset();
-                    }
-                });
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @RequiresApi(api = Build.VERSION_CODES.M)
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            Toast.makeText(context, "Some error occured. Try again", Toast.LENGTH_SHORT).show();
+                            reset();
+                        }
+                    });
+        }catch(Exception e){
+            e.printStackTrace();
+            Toast.makeText(context, "Some error occured", Toast.LENGTH_SHORT).show();
+        }
     }
 
     private void updateDeviceId(String docId) {
-        String deviceId = Settings.Secure.getString(context.getContentResolver(), Settings.Secure.ANDROID_ID);
-        mFirestore.collection("USER").document(docId).update("DEVICE_ID",deviceId).
-                addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        Log.w(TAG,"Device id updated successfully");
-                    }
-                })
-        .addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                Log.w(TAG,"Failed to update device id");
-            }
-        });
+        try {
+            String deviceId = Settings.Secure.getString(context.getContentResolver(), Settings.Secure.ANDROID_ID);
+            mFirestore.collection("USER").document(docId).update("DEVICE_ID", deviceId).
+                    addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void aVoid) {
+                            Log.w(TAG, "Device id updated successfully");
+                        }
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            Log.w(TAG, "Failed to update device id");
+                        }
+                    });
+        }catch(Exception e){
+            e.printStackTrace();
+            Toast.makeText(context, "Some error occured", Toast.LENGTH_SHORT).show();
+        }
     }
 
 
     private void signup() {
-        String deviceId = Settings.Secure.getString(context.getContentResolver(), Settings.Secure.ANDROID_ID);
-        HashMap<String, Object> userData = new HashMap<>();
-        userData.put("COINS_REDEEMED", 0);
-        userData.put("POLL_COINS", 10);
-        userData.put("SHARE_COIN", 0);
-        userData.put("DEVICE_ID", deviceId);
-        userData.put("PAYTM_NUMBER", mMobileNumber);
-        userData.put("PHONE_NUMBER", mMobileNumber);
-        userData.put("REFERRED_BY", "Nobody");
-        userData.put("MONEY_REQUESTED", false);
-        userData.put("COINS_USED",0);
-        mFirestore.collection("USER")
-                .add(userData)
-                .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
-                    @Override
-                    public void onSuccess(DocumentReference documentReference) {
-                        Intent intent = new Intent(currentActivity, MainActivity.class);
-                        mSharedPreferences.edit().putInt("available_coins", 10).apply();
-                        mSharedPreferences.edit().putString("phone_no", mMobileNumber).apply();
-                        mSharedPreferences.edit().putBoolean("login", true).apply();
-                        Toast.makeText(context, "Signed in successfully", Toast.LENGTH_SHORT).show();
-                        startActivity(intent);
-                        finish();
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @RequiresApi(api = Build.VERSION_CODES.M)
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Log.w(TAG, "onFailure: Failed to store data during signup");
-                        Toast.makeText(context, "Some error occured", Toast.LENGTH_SHORT).show();
-                        reset();
-                    }
-                });
+        try {
+            String deviceId = Settings.Secure.getString(context.getContentResolver(), Settings.Secure.ANDROID_ID);
+            HashMap<String, Object> userData = new HashMap<>();
+            userData.put("COINS_REDEEMED", 0);
+            userData.put("POLL_COINS", 10);
+            userData.put("SHARE_COINS", 0);
+            userData.put("DEVICE_ID", deviceId);
+            userData.put("PAYTM_NUMBER", mMobileNumber);
+            userData.put("PHONE_NUMBER", mMobileNumber);
+            userData.put("REFERRED_BY", "");
+            userData.put("MONEY_REQUESTED", false);
+            userData.put("COINS_USED", 0);
+            mFirestore.collection("USER")
+                    .add(userData)
+                    .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                        @Override
+                        public void onSuccess(DocumentReference documentReference) {
+                            Intent intent = new Intent(currentActivity, MainActivity.class);
+                            mSharedPreferences.edit().putInt("available_coins", 10).apply();
+                            mSharedPreferences.edit().putString("phone_no", mMobileNumber).apply();
+                            mSharedPreferences.edit().putBoolean("login", true).apply();
+                            Toast.makeText(context, "Signed in successfully", Toast.LENGTH_SHORT).show();
+                            startActivity(intent);
+                            finish();
+                        }
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @RequiresApi(api = Build.VERSION_CODES.M)
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            Log.w(TAG, "onFailure: Failed to store data during signup");
+                            Toast.makeText(context, "Some error occured", Toast.LENGTH_SHORT).show();
+                            reset();
+                        }
+                    });
+        }catch(Exception e){
+            e.printStackTrace();
+            Toast.makeText(context, "Some error occured", Toast.LENGTH_SHORT).show();
+        }
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.M)
     private void reset() {
         enableMobileTextField();
         disableMobileOkButton();
@@ -445,41 +494,98 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void verifyPhone() {
-        mAuth.verifyPhoneNumber("+91" + mMobileNumber, 30, TimeUnit.SECONDS, currentActivity, mCallbacks);
+        try {
+            mAuth.verifyPhoneNumber("+91" + mMobileNumber, 30, TimeUnit.SECONDS, currentActivity, mCallbacks);
+        }catch(Exception e){
+            Toast.makeText(context, "Some error occured", Toast.LENGTH_SHORT).show();
+        }
     }
-
-    private void showAlertDialog(){
-        new AlertDialog.Builder(context)
-                .setTitle("Error")
-                .setMessage("The app you are using is no longer supported.Please update and try again")
-                .setPositiveButton("Update", new DialogInterface.OnClickListener() {
+    AlertDialog versionDialog;
+    private void showVersionAlertDialog(){
+       final AlertDialog.Builder builder = new AlertDialog.Builder(context);
+       builder.setTitle("Error");
+       builder.setMessage("The app you are using is no longer supported.Please update and try again");
+       builder.setPositiveButton("Update", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         try {
                             startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store")));
-                            finishAffinity();
-                            System.exit(0);
+                            new Handler().postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    ActivityCompat.finishAffinity(LoginActivity.this);
+                                }
+                            },200);
                         }
                         catch (Exception e) {
                             Toast.makeText(context,"Unable to open play store",Toast.LENGTH_SHORT).show();
-                            finishAffinity();
+                            ActivityCompat.finishAffinity(LoginActivity.this);
                             System.exit(0);
                         }
                     }
-                }).create().show();
+                });
+       versionDialog = builder.create();
+       versionDialog.setCancelable(false);
+       versionDialog.setCanceledOnTouchOutside(false);
+       versionDialog.show();
+    }
+    AlertDialog internetDialog;
+    private void showInternetDialog(){
+       final AlertDialog.Builder builder = new AlertDialog.Builder(context);
+       builder.setTitle("Error");
+       builder.setMessage("This app requires internet connection");
+       builder.setPositiveButton("Settings", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        // open internet settings
+                        Intent intent = new Intent(Settings.ACTION_WIRELESS_SETTINGS);
+                        startActivity(intent);
+                    }
+                });
+       builder.setNegativeButton("Exit", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        // exit the app
+                        Toast.makeText(context, "Closing app...", Toast.LENGTH_SHORT).show();
+                        new Handler().postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                ActivityCompat.finishAffinity(LoginActivity.this);
+                            }
+                        },800);
+                    }
+                });
+       internetDialog = builder.create();
+       internetDialog.setCancelable(false);
+       internetDialog.setCanceledOnTouchOutside(false);
+       internetDialog.show();
+    }
+
+    @Override
+    protected void onPause() {
+        if(internetDialog!=null && internetDialog.isShowing())
+            internetDialog.dismiss();
+        if(versionDialog!=null && versionDialog.isShowing())
+            versionDialog.dismiss();
+        super.onPause();
+    }
+
+    @Override
+    protected void onResume() {
+        if(internetDialog!=null && internetDialog.isShowing())
+            internetDialog.dismiss();
+        if(versionDialog!=null && versionDialog.isShowing())
+            versionDialog.dismiss();
+        checkSupportedVersion();
+        super.onResume();
     }
 
     private void editTextTextChangeListener() {
         edtMobile.addTextChangedListener(new TextWatcher() {
             @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-            }
-
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) { }
             @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-            }
-
-            @RequiresApi(api = Build.VERSION_CODES.M)
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) { }
             @Override
             public void afterTextChanged(Editable editable) {
                 if (editable.toString().length() == 10) {
@@ -494,64 +600,58 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.M)
     void disableMobileTextField() {
         edtMobile.setEnabled(false);
         edtMobile.setForeground(getDrawable(R.drawable.foreground_disabled));
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.M)
     void disableMobileOkButton() {
         btnMobile.setEnabled(false);
         btnMobile.setForeground(getDrawable(R.drawable.foreground_disabled));
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.M)
     void disableOtpTextField() {
         edtOtp.setEnabled(false);
         edtOtp.setForeground(getDrawable(R.drawable.foreground_disabled));
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.M)
     void disableOtpOkButton() {
         btnOtp.setEnabled(false);
         btnOtp.setForeground(getDrawable(R.drawable.foreground_disabled));
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.M)
     void disableResendButton() {
-        txtResendOtp.setEnabled(false);
-        txtResendOtp.setForeground(getDrawable(R.drawable.foreground_disabled));
+       // txtResendOtp.setEnabled(false);
+        //txtResendOtp.setForeground(getDrawable(R.drawable.foreground_disabled));
+        btnResendOtp.setVisibility(View.INVISIBLE);
+        btnResendOtp.setEnabled(false);
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.M)
     void enableMobileTextField() {
         edtMobile.setEnabled(true);
         edtMobile.setForeground(null);
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.M)
     void enableMobileOkButton() {
         btnMobile.setEnabled(true);
         btnMobile.setForeground(null);
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.M)
     void enableOtpTextField() {
         edtOtp.setEnabled(true);
         edtOtp.setForeground(null);
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.M)
     void enableOtpOkButton() {
         btnOtp.setEnabled(true);
         btnOtp.setForeground(null);
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.M)
     void enableResendButton() {
-        txtResendOtp.setEnabled(true);
-        txtResendOtp.setForeground(null);
+       // txtResendOtp.setEnabled(true);
+        //txtResendOtp.setForeground(null);
+        btnResendOtp.setVisibility(View.VISIBLE);
+        btnResendOtp.setEnabled(true);
     }
 
     void hideMobileOkButton() {

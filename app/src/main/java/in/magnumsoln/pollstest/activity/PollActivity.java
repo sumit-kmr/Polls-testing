@@ -210,29 +210,34 @@ public class PollActivity extends AppCompatActivity implements RewardedVideoAdLi
     }
 
     private void submitResponse() {
-        HashMap<String, Object> m = new HashMap<>();
-        m.put("SELECTED_OPTION", option_selected);
-        mFirestore.collection("USER")
-                .document(userId)
-                .collection("POLL")
-                .document(currentPoll.getPOLL_ID())
-                .set(m)
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        submitButton.setBackground(getDrawable(R.drawable.gray));
-                        submitButton.setEnabled(false);
-                        submit_button_text.setText("Response submited");
-                        submit_button_text.setTextColor(Color.RED);
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        errorOccured();
-                        onBackPressed();
-                    }
-                });
+        try {
+            HashMap<String, Object> m = new HashMap<>();
+            m.put("SELECTED_OPTION", option_selected);
+            mFirestore.collection("USER")
+                    .document(userId)
+                    .collection("POLL")
+                    .document(currentPoll.getPOLL_ID())
+                    .set(m)
+                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void aVoid) {
+                            submitButton.setBackground(getDrawable(R.drawable.gray));
+                            submitButton.setEnabled(false);
+                            submit_button_text.setText("Response submited");
+                            submit_button_text.setTextColor(Color.RED);
+                        }
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            errorOccured();
+                            onBackPressed();
+                        }
+                    });
+        }catch (Exception e){
+            e.printStackTrace();
+            Toast.makeText(context, "Some error occured", Toast.LENGTH_SHORT).show();
+        }
     }
 
     boolean adsEnabled;
@@ -340,140 +345,165 @@ public class PollActivity extends AppCompatActivity implements RewardedVideoAdLi
     }
 
     private void performCoinButtonUnlock() {
-        availableCoins--;
-        mSharedPreference.edit().putInt("available_coins", (int)availableCoins).apply();
-        nCoins.setText(" X " + availableCoins);
-        mFirestore.collection("USER").document(userId).get()
-                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                    @Override
-                    public void onSuccess(DocumentSnapshot documentSnapshot) {
-                        long coins_used = (long) documentSnapshot.get("COINS_USED");
-                        mFirestore.collection("USER").document(userId).update("COINS_USED", coins_used+1)
-                                .addOnFailureListener(new OnFailureListener() {
-                                    @Override
-                                    public void onFailure(@NonNull Exception e) {
-                                        errorOccured();
-                                        return;
-                                    }
-                                });
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Toast.makeText(context,"Some error occured",Toast.LENGTH_SHORT).show();
-                    }
-                });
-
-        mSharedPreference.edit().putBoolean(currentPoll.getPOLL_ID(), true).apply();
-        popupCardView.setVisibility(View.GONE);
-        enableScrollView();
-        imgPollImage.setForeground(null);
-        ques.setForeground(null);
-        opA.setEnabled(true);
-        opB.setEnabled(true);
-        opC.setEnabled(true);
-        opD.setEnabled(true);
-        opA.setForeground(null);
-        opB.setForeground(null);
-        opC.setForeground(null);
-        opD.setForeground(null);
-        submitButton.setBackground(getDrawable(R.drawable.gray));
-        submitButton.setForeground(null);
-        submit_button_text.setText("Win 4 coins on correct prediction");
-        submit_button_text.setTextColor(Color.RED);
+        try {
+            availableCoins--;
+            mSharedPreference.edit().putInt("available_coins", (int) availableCoins).apply();
+            nCoins.setText(" X " + availableCoins);
+            mFirestore.collection("USER").document(userId).get()
+                    .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                        @Override
+                        public void onSuccess(DocumentSnapshot documentSnapshot) {
+                            long coins_used = (long) documentSnapshot.get("COINS_USED");
+                            mFirestore.collection("USER").document(userId).update("COINS_USED", coins_used + 1)
+                                    .addOnFailureListener(new OnFailureListener() {
+                                        @Override
+                                        public void onFailure(@NonNull Exception e) {
+                                            errorOccured();
+                                            return;
+                                        }
+                                    });
+                        }
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            Toast.makeText(context, "Some error occured", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+            mSharedPreference.edit().putBoolean(currentPoll.getPOLL_ID(), true).apply();
+            popupCardView.setVisibility(View.GONE);
+            enableScrollView();
+            imgPollImage.setForeground(null);
+            ques.setForeground(null);
+            opA.setEnabled(true);
+            opB.setEnabled(true);
+            opC.setEnabled(true);
+            opD.setEnabled(true);
+            opA.setForeground(null);
+            opB.setForeground(null);
+            opC.setForeground(null);
+            opD.setForeground(null);
+            submitButton.setBackground(getDrawable(R.drawable.gray));
+            submitButton.setForeground(null);
+            submit_button_text.setText("Win 4 coins on correct prediction");
+            submit_button_text.setTextColor(Color.RED);
+        }catch(Exception e){
+            e.printStackTrace();
+            Toast.makeText(context, "Some error occured", Toast.LENGTH_SHORT).show();
+        }
     }
 
     private void checkPollStatus() {
-        mFirestore.collection("POLL")
-                .document(currentPoll.getPOLL_ID())
-                .get()
-                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                    @Override
-                    public void onSuccess(DocumentSnapshot documentSnapshot) {
-                        if (!documentSnapshot.exists()) {
-                            errorOccured();
-                            return;
-                        }
-                        String poll_status = getIntent().getStringExtra("poll_status");
-                        if (poll_status.equalsIgnoreCase("OPEN")) {
-                            //OPEN
-                            if (isPollUnlocked) {
-                                //question unlocked == true
+        try {
+            mFirestore.collection("POLL")
+                    .document(currentPoll.getPOLL_ID())
+                    .get()
+                    .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                        @Override
+                        public void onSuccess(DocumentSnapshot documentSnapshot) {
+                            if (!documentSnapshot.exists()) {
+                                errorOccured();
+                                return;
+                            }
+                            String poll_status = getIntent().getStringExtra("poll_status");
+                            if (poll_status.equalsIgnoreCase("OPEN")) {
+                                //OPEN
+                                if (isPollUnlocked) {
+                                    //question unlocked == true
 //                                isQuestionAttempted("open");
-                                popupCardView.setVisibility(View.GONE);
-                                imgPollImage.setForeground(null);
-                                mFirestore.collection("USER")
-                                        .document(userId)
-                                        .collection("POLL")
-                                        .document(currentPoll.getPOLL_ID())
-                                        .get()
-                                        .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                                            @Override
-                                            public void onSuccess(DocumentSnapshot documentSnapshot) {
-                                                if (documentSnapshot.exists()) {
-                                                    // question is attempted
-                                                    long selected_option = (long) documentSnapshot
-                                                            .get("SELECTED_OPTION");
-                                                    opA.setEnabled(false);
-                                                    opB.setEnabled(false);
-                                                    opC.setEnabled(false);
-                                                    opD.setEnabled(false);
-                                                    opA.setForeground(null);
-                                                    opB.setForeground(null);
-                                                    opC.setForeground(null);
-                                                    opD.setForeground(null);
-                                                    ques.setForeground(null);
-                                                    enableScrollView();
-                                                    submitButton.setEnabled(false);
-                                                    submitButton.setBackground(getDrawable(R.drawable.gray));
-                                                    submit_button_text.setText("Poll result not declared yet");
-                                                    submit_button_text.setTextColor(Color.RED);
-                                                    switch ((int) selected_option) {
-                                                        case 0:
-                                                            opA.setBackground(getDrawable(R.drawable.green_round_background));
-                                                            break;
-                                                        case 1:
-                                                            opB.setBackground(getDrawable(R.drawable.green_round_background));
-                                                            break;
-                                                        case 2:
-                                                            opC.setBackground(getDrawable(R.drawable.green_round_background));
-                                                            break;
-                                                        case 3:
-                                                            opD.setBackground(getDrawable(R.drawable.green_round_background));
-                                                            break;
+                                    popupCardView.setVisibility(View.GONE);
+                                    imgPollImage.setForeground(null);
+                                    mFirestore.collection("USER")
+                                            .document(userId)
+                                            .collection("POLL")
+                                            .document(currentPoll.getPOLL_ID())
+                                            .get()
+                                            .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                                                @Override
+                                                public void onSuccess(DocumentSnapshot documentSnapshot) {
+                                                    if (documentSnapshot.exists()) {
+                                                        // question is attempted
+                                                        long selected_option = (long) documentSnapshot
+                                                                .get("SELECTED_OPTION");
+                                                        opA.setEnabled(false);
+                                                        opB.setEnabled(false);
+                                                        opC.setEnabled(false);
+                                                        opD.setEnabled(false);
+                                                        opA.setForeground(null);
+                                                        opB.setForeground(null);
+                                                        opC.setForeground(null);
+                                                        opD.setForeground(null);
+                                                        ques.setForeground(null);
+                                                        enableScrollView();
+                                                        submitButton.setEnabled(false);
+                                                        submitButton.setBackground(getDrawable(R.drawable.gray));
+                                                        submit_button_text.setText("Poll result not declared yet");
+                                                        submit_button_text.setTextColor(Color.RED);
+                                                        switch ((int) selected_option) {
+                                                            case 0:
+                                                                opA.setBackground(getDrawable(R.drawable.green_round_background));
+                                                                break;
+                                                            case 1:
+                                                                opB.setBackground(getDrawable(R.drawable.green_round_background));
+                                                                break;
+                                                            case 2:
+                                                                opC.setBackground(getDrawable(R.drawable.green_round_background));
+                                                                break;
+                                                            case 3:
+                                                                opD.setBackground(getDrawable(R.drawable.green_round_background));
+                                                                break;
+                                                        }
+                                                        progressBar.setVisibility(View.GONE);
+                                                    } else {
+                                                        // question not attempted
+                                                        opA.setForeground(null);
+                                                        opB.setForeground(null);
+                                                        opC.setForeground(null);
+                                                        opD.setForeground(null);
+                                                        opA.setEnabled(true);
+                                                        opB.setEnabled(true);
+                                                        opC.setEnabled(true);
+                                                        opD.setEnabled(true);
+                                                        ques.setForeground(null);
+                                                        enableScrollView();
+                                                        submitButton.setBackground(getDrawable(R.drawable.gray));
+                                                        submitButton.setEnabled(false);
+                                                        submit_button_text.setText("Win 4 coins on correct prediction");
+                                                        submit_button_text.setTextColor(Color.RED);
+                                                        progressBar.setVisibility(View.GONE);
                                                     }
-                                                    progressBar.setVisibility(View.GONE);
-                                                } else {
-                                                    // question not attempted
-                                                    opA.setForeground(null);
-                                                    opB.setForeground(null);
-                                                    opC.setForeground(null);
-                                                    opD.setForeground(null);
-                                                    opA.setEnabled(true);
-                                                    opB.setEnabled(true);
-                                                    opC.setEnabled(true);
-                                                    opD.setEnabled(true);
-                                                    ques.setForeground(null);
-                                                    enableScrollView();
-                                                    submitButton.setBackground(getDrawable(R.drawable.gray));
-                                                    submitButton.setEnabled(false);
-                                                    submit_button_text.setText("Win 4 coins on correct prediction");
-                                                    submit_button_text.setTextColor(Color.RED);
-                                                    progressBar.setVisibility(View.GONE);
                                                 }
-                                            }
-                                        })
-                                        .addOnFailureListener(new OnFailureListener() {
-                                            @Override
-                                            public void onFailure(@NonNull Exception e) {
-                                                errorOccured();
-                                            }
-                                        });
-                            } else {
-                                // question unlocked == false
-                                // blurry UI and status: close timer
-                                imgPollImage.setForeground(getDrawable(disabled_foreground));
+                                            })
+                                            .addOnFailureListener(new OnFailureListener() {
+                                                @Override
+                                                public void onFailure(@NonNull Exception e) {
+                                                    errorOccured();
+                                                }
+                                            });
+                                } else {
+                                    // question unlocked == false
+                                    // blurry UI and status: close timer
+                                    imgPollImage.setForeground(getDrawable(disabled_foreground));
+                                    opA.setForeground(getDrawable(disabled_foreground));
+                                    opA.setEnabled(false);
+                                    opB.setForeground(getDrawable(disabled_foreground));
+                                    opB.setEnabled(false);
+                                    opC.setForeground(getDrawable(disabled_foreground));
+                                    opC.setEnabled(false);
+                                    opD.setForeground(getDrawable(disabled_foreground));
+                                    opD.setEnabled(false);
+                                    ques.setForeground(getDrawable(disabled_foreground));
+                                    disableScrollView();
+                                    submitButton.setBackground(getDrawable(R.drawable.gray));
+                                    submitButton.setEnabled(false);
+                                    submit_button_text.setText("Close timer");
+                                    submit_button_text.setTextColor(Color.RED);
+                                    popupCardView.setVisibility(View.VISIBLE);
+                                    progressBar.setVisibility(View.GONE);
+                                }
+                            } else if (poll_status.equalsIgnoreCase("CLOSED")) {
+                                //CLOSED
+                                popupCardView.setVisibility(View.GONE);
                                 opA.setForeground(getDrawable(disabled_foreground));
                                 opA.setEnabled(false);
                                 opB.setForeground(getDrawable(disabled_foreground));
@@ -482,220 +512,210 @@ public class PollActivity extends AppCompatActivity implements RewardedVideoAdLi
                                 opC.setEnabled(false);
                                 opD.setForeground(getDrawable(disabled_foreground));
                                 opD.setEnabled(false);
-                                ques.setForeground(getDrawable(disabled_foreground));
-                                disableScrollView();
                                 submitButton.setBackground(getDrawable(R.drawable.gray));
                                 submitButton.setEnabled(false);
-                                submit_button_text.setText("Close timer");
-                                submit_button_text.setTextColor(Color.RED);
-                                popupCardView.setVisibility(View.VISIBLE);
-                                progressBar.setVisibility(View.GONE);
-                            }
-                        } else if (poll_status.equalsIgnoreCase("CLOSED")) {
-                            //CLOSED
-                            popupCardView.setVisibility(View.GONE);
-                            opA.setForeground(getDrawable(disabled_foreground));
-                            opA.setEnabled(false);
-                            opB.setForeground(getDrawable(disabled_foreground));
-                            opB.setEnabled(false);
-                            opC.setForeground(getDrawable(disabled_foreground));
-                            opC.setEnabled(false);
-                            opD.setForeground(getDrawable(disabled_foreground));
-                            opD.setEnabled(false);
-                            submitButton.setBackground(getDrawable(R.drawable.gray));
-                            submitButton.setEnabled(false);
-                            if (isPollUnlocked) {
+                                if (isPollUnlocked) {
 //                                isQuestionAttempted("close");
-                                mFirestore.collection("USER")
-                                        .document(userId)
-                                        .collection("POLL")
-                                        .document(currentPoll.getPOLL_ID())
-                                        .get()
-                                        .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                                            @Override
-                                            public void onSuccess(DocumentSnapshot documentSnapshot) {
-                                                if (documentSnapshot.exists()) {
-                                                    // response == true
-                                                    long selected_option = (long) documentSnapshot.get("SELECTED_OPTION");
-                                                    switch ((int) selected_option) {
-                                                        case 0:
-                                                            opA.setBackground(getDrawable(R.drawable.green_round_background));
-                                                            opA.setForeground(null);
-                                                            break;
-                                                        case 1:
-                                                            opB.setBackground(getDrawable(R.drawable.green_round_background));
-                                                            opB.setForeground(null);
-                                                            break;
-                                                        case 2:
-                                                            opC.setBackground(getDrawable(R.drawable.green_round_background));
-                                                            opC.setForeground(null);
-                                                            break;
-                                                        case 3:
-                                                            opD.setBackground(getDrawable(R.drawable.green_round_background));
-                                                            opD.setForeground(null);
-                                                            break;
+                                    mFirestore.collection("USER")
+                                            .document(userId)
+                                            .collection("POLL")
+                                            .document(currentPoll.getPOLL_ID())
+                                            .get()
+                                            .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                                                @Override
+                                                public void onSuccess(DocumentSnapshot documentSnapshot) {
+                                                    if (documentSnapshot.exists()) {
+                                                        // response == true
+                                                        long selected_option = (long) documentSnapshot.get("SELECTED_OPTION");
+                                                        switch ((int) selected_option) {
+                                                            case 0:
+                                                                opA.setBackground(getDrawable(R.drawable.green_round_background));
+                                                                opA.setForeground(null);
+                                                                break;
+                                                            case 1:
+                                                                opB.setBackground(getDrawable(R.drawable.green_round_background));
+                                                                opB.setForeground(null);
+                                                                break;
+                                                            case 2:
+                                                                opC.setBackground(getDrawable(R.drawable.green_round_background));
+                                                                opC.setForeground(null);
+                                                                break;
+                                                            case 3:
+                                                                opD.setBackground(getDrawable(R.drawable.green_round_background));
+                                                                opD.setForeground(null);
+                                                                break;
+                                                        }
+                                                        submit_button_text.setText("Poll result not declared yet");
+                                                        submit_button_text.setTextColor(Color.RED);
+                                                        progressBar.setVisibility(View.GONE);
+                                                    } else {
+                                                        // response == false
+                                                        submit_button_text.setText("This poll is closed");
+                                                        submit_button_text.setTextColor(Color.RED);
+                                                        progressBar.setVisibility(View.GONE);
                                                     }
-                                                    submit_button_text.setText("Poll result not declared yet");
-                                                    submit_button_text.setTextColor(Color.RED);
-                                                    progressBar.setVisibility(View.GONE);
-                                                } else {
-                                                    // response == false
-                                                    submit_button_text.setText("This poll is closed");
-                                                    submit_button_text.setTextColor(Color.RED);
-                                                    progressBar.setVisibility(View.GONE);
                                                 }
-                                            }
-                                        })
-                                        .addOnFailureListener(new OnFailureListener() {
-                                            @Override
-                                            public void onFailure(@NonNull Exception e) {
-                                                errorOccured();
-                                            }
-                                        });
-                            } else {
-                                // question not attempted
-
-                                submit_button_text.setText("This poll is closed");
-                                submit_button_text.setTextColor(Color.RED);
-                                progressBar.setVisibility(View.GONE);
-                            }
-
-                        } else if (poll_status.equalsIgnoreCase("DECLARED")) {
-                            //DECLARED
-                            opA.setEnabled(false);
-                            opB.setEnabled(false);
-                            opC.setEnabled(false);
-                            opD.setEnabled(false);
-                            submitButton.setEnabled(false);
-                            submitButton.setBackground(getDrawable(R.drawable.gray));
-                            submit_button_text.setTextColor(Color.RED);
-                            popupCardView.setVisibility(View.GONE);
-                            if (isPollUnlocked) {
-                                // poll unlocked
-                                mFirestore.collection("USER")
-                                        .document(userId)
-                                        .collection("POLL")
-                                        .document(currentPoll.getPOLL_ID())
-                                        .get()
-                                        .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                                            @Override
-                                            public void onSuccess(DocumentSnapshot documentSnapshot) {
-                                                if (documentSnapshot.exists()) {
-                                                    // response == true
-                                                    int redBackground = R.drawable.red_round_background;
-                                                    int greenBackground = R.drawable.green_round_background;
-                                                    long selected_option = (long) documentSnapshot.get("SELECTED_OPTION");
-                                                    long correct_option = currentPoll.getCORRECT_OPTION();
-                                                    int requiredBackground =
-                                                            (selected_option == correct_option) ? greenBackground : redBackground;
-
-                                                    switch ((int) selected_option) {
-                                                        case 0:
-                                                            opA.setBackground(getDrawable(requiredBackground));
-                                                            break;
-                                                        case 1:
-                                                            opB.setBackground(getDrawable(requiredBackground));
-                                                            break;
-                                                        case 2:
-                                                            opC.setBackground(getDrawable(requiredBackground));
-                                                            break;
-                                                        case 3:
-                                                            opD.setBackground(getDrawable(requiredBackground));
-                                                            break;
-                                                    }
-                                                    switch ((int) correct_option) {
-                                                        case 0:
-                                                            A.setVisibility(View.GONE);
-                                                            tickA.setVisibility(View.VISIBLE);
-                                                            break;
-                                                        case 1:
-                                                            B.setVisibility(View.GONE);
-                                                            tickB.setVisibility(View.VISIBLE);
-                                                            break;
-                                                        case 2:
-                                                            C.setVisibility(View.GONE);
-                                                            tickC.setVisibility(View.VISIBLE);
-                                                            break;
-                                                        case 3:
-                                                            D.setVisibility(View.GONE);
-                                                            tickD.setVisibility(View.VISIBLE);
-                                                            break;
-                                                    }
-                                                    int statusTextColor = (selected_option == correct_option) ?
-                                                            getColor(R.color.colorAccent) : getColor(R.color.red);
-                                                    submit_button_text.setTextColor(statusTextColor);
-                                                    String status = (selected_option == correct_option) ?
-                                                            "Congrats!! You won 4 coins " + getEmojiByUnicode(0x1F603) :
-                                                            "Better luck next time " + getEmojiByUnicode(0x2639);
-                                                    submit_button_text.setText(status);
-                                                    progressBar.setVisibility(View.GONE);
-                                                } else {
-                                                    // response == false
-                                                    opA.setForeground(getDrawable(disabled_foreground));
-                                                    opB.setForeground(getDrawable(disabled_foreground));
-                                                    opC.setForeground(getDrawable(disabled_foreground));
-                                                    opD.setForeground(getDrawable(disabled_foreground));
-                                                    submit_button_text.setText("This poll is closed");
-                                                    submit_button_text.setTextColor(Color.RED);
-                                                    progressBar.setVisibility(View.GONE);
+                                            })
+                                            .addOnFailureListener(new OnFailureListener() {
+                                                @Override
+                                                public void onFailure(@NonNull Exception e) {
+                                                    errorOccured();
                                                 }
-                                            }
-                                        })
-                                        .addOnFailureListener(new OnFailureListener() {
-                                            @Override
-                                            public void onFailure(@NonNull Exception e) {
-                                                errorOccured();
-                                            }
-                                        });
-                            } else {
-                                // poll not unlocked
-                                opA.setForeground(getDrawable(disabled_foreground));
-                                opB.setForeground(getDrawable(disabled_foreground));
-                                opC.setForeground(getDrawable(disabled_foreground));
-                                opD.setForeground(getDrawable(disabled_foreground));
-                                submit_button_text.setText("This poll is closed");
+                                            });
+                                } else {
+                                    // question not attempted
+
+                                    submit_button_text.setText("This poll is closed");
+                                    submit_button_text.setTextColor(Color.RED);
+                                    progressBar.setVisibility(View.GONE);
+                                }
+
+                            } else if (poll_status.equalsIgnoreCase("DECLARED")) {
+                                //DECLARED
+                                opA.setEnabled(false);
+                                opB.setEnabled(false);
+                                opC.setEnabled(false);
+                                opD.setEnabled(false);
+                                submitButton.setEnabled(false);
+                                submitButton.setBackground(getDrawable(R.drawable.gray));
                                 submit_button_text.setTextColor(Color.RED);
-                                progressBar.setVisibility(View.GONE);
+                                popupCardView.setVisibility(View.GONE);
+                                if (isPollUnlocked) {
+                                    // poll unlocked
+                                    mFirestore.collection("USER")
+                                            .document(userId)
+                                            .collection("POLL")
+                                            .document(currentPoll.getPOLL_ID())
+                                            .get()
+                                            .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                                                @Override
+                                                public void onSuccess(DocumentSnapshot documentSnapshot) {
+                                                    if (documentSnapshot.exists()) {
+                                                        // response == true
+                                                        int redBackground = R.drawable.red_round_background;
+                                                        int greenBackground = R.drawable.green_round_background;
+                                                        long selected_option = (long) documentSnapshot.get("SELECTED_OPTION");
+                                                        long correct_option = currentPoll.getCORRECT_OPTION();
+                                                        int requiredBackground =
+                                                                (selected_option == correct_option) ? greenBackground : redBackground;
+
+                                                        switch ((int) selected_option) {
+                                                            case 0:
+                                                                opA.setBackground(getDrawable(requiredBackground));
+                                                                break;
+                                                            case 1:
+                                                                opB.setBackground(getDrawable(requiredBackground));
+                                                                break;
+                                                            case 2:
+                                                                opC.setBackground(getDrawable(requiredBackground));
+                                                                break;
+                                                            case 3:
+                                                                opD.setBackground(getDrawable(requiredBackground));
+                                                                break;
+                                                        }
+                                                        switch ((int) correct_option) {
+                                                            case 0:
+                                                                A.setVisibility(View.GONE);
+                                                                tickA.setVisibility(View.VISIBLE);
+                                                                break;
+                                                            case 1:
+                                                                B.setVisibility(View.GONE);
+                                                                tickB.setVisibility(View.VISIBLE);
+                                                                break;
+                                                            case 2:
+                                                                C.setVisibility(View.GONE);
+                                                                tickC.setVisibility(View.VISIBLE);
+                                                                break;
+                                                            case 3:
+                                                                D.setVisibility(View.GONE);
+                                                                tickD.setVisibility(View.VISIBLE);
+                                                                break;
+                                                        }
+                                                        int statusTextColor = (selected_option == correct_option) ?
+                                                                getColor(R.color.colorAccent) : getColor(R.color.red);
+                                                        submit_button_text.setTextColor(statusTextColor);
+                                                        String status = (selected_option == correct_option) ?
+                                                                "Congrats!! You won 4 coins " + getEmojiByUnicode(0x1F603) :
+                                                                "Better luck next time " + getEmojiByUnicode(0x2639);
+                                                        submit_button_text.setText(status);
+                                                        progressBar.setVisibility(View.GONE);
+                                                    } else {
+                                                        // response == false
+                                                        opA.setForeground(getDrawable(disabled_foreground));
+                                                        opB.setForeground(getDrawable(disabled_foreground));
+                                                        opC.setForeground(getDrawable(disabled_foreground));
+                                                        opD.setForeground(getDrawable(disabled_foreground));
+                                                        submit_button_text.setText("This poll is closed");
+                                                        submit_button_text.setTextColor(Color.RED);
+                                                        progressBar.setVisibility(View.GONE);
+                                                    }
+                                                }
+                                            })
+                                            .addOnFailureListener(new OnFailureListener() {
+                                                @Override
+                                                public void onFailure(@NonNull Exception e) {
+                                                    errorOccured();
+                                                }
+                                            });
+                                } else {
+                                    // poll not unlocked
+                                    opA.setForeground(getDrawable(disabled_foreground));
+                                    opB.setForeground(getDrawable(disabled_foreground));
+                                    opC.setForeground(getDrawable(disabled_foreground));
+                                    opD.setForeground(getDrawable(disabled_foreground));
+                                    submit_button_text.setText("This poll is closed");
+                                    submit_button_text.setTextColor(Color.RED);
+                                    progressBar.setVisibility(View.GONE);
+                                }
                             }
                         }
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        errorOccured();
-                    }
-                });
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            errorOccured();
+                        }
+                    });
+        }catch(Exception e){
+            e.printStackTrace();
+            Toast.makeText(context, "Some error occured", Toast.LENGTH_SHORT).show();
+        }
     }
 
     private void fetchCoinsAndUserId() {
-        mFirestore.collection("USER")
-                .whereEqualTo("PHONE_NUMBER", mSharedPreference.getString("phone_no", null))
-                .get()
-                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-                    @Override
-                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                        if (queryDocumentSnapshots.isEmpty()) {
-                            errorOccured();
-                            return;
+        try {
+            mFirestore.collection("USER")
+                    .whereEqualTo("PHONE_NUMBER", mSharedPreference.getString("phone_no", null))
+                    .get()
+                    .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                        @Override
+                        public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                            if (queryDocumentSnapshots.isEmpty()) {
+                                errorOccured();
+                                return;
+                            }
+                            DocumentSnapshot currentDocument = queryDocumentSnapshots.getDocuments().get(0);
+                            long used_coins = (long) currentDocument.get("COINS_USED");
+                            long share_coins = (long) currentDocument.get("SHARE_COINS");
+                            long poll_coins = (long) currentDocument.get("POLL_COINS");
+                            long coins_redeemed = (long) currentDocument.get("COINS_REDEEMED");
+                            availableCoins = poll_coins + share_coins - used_coins - coins_redeemed;
+                            nCoins.setText(" X " + availableCoins);
+                            mSharedPreference.edit().putInt("available_coins", (int) availableCoins).apply();
+                            userId = currentDocument.getId();
+                            checkPollStatus();
                         }
-                        DocumentSnapshot currentDocument = queryDocumentSnapshots.getDocuments().get(0);
-                        long used_coins = (long) currentDocument.get("COINS_USED");
-                        long share_coins = (long) currentDocument.get("SHARE_COIN");
-                        long poll_coins = (long) currentDocument.get("POLL_COINS");
-                        availableCoins = poll_coins + share_coins - used_coins;
-                        nCoins.setText(" X " + availableCoins);
-                        mSharedPreference.edit().putInt("available_coins", (int)availableCoins).apply();
-                        userId = currentDocument.getId();
-                        checkPollStatus();
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        errorOccured();
-                    }
-                });
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            errorOccured();
+                        }
+                    });
+        }catch (Exception e){
+            e.printStackTrace();
+            Toast.makeText(context, "Some error occured", Toast.LENGTH_SHORT).show();
+        }
     }
 
     private void enableScrollView() {
