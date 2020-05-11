@@ -9,6 +9,7 @@ import android.os.Bundle;
 import androidx.fragment.app.Fragment;
 
 import android.os.Handler;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -33,7 +34,9 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import in.magnumsoln.pollstest.R;
 import in.magnumsoln.pollstest.activity.CategoryActivity;
+import in.magnumsoln.pollstest.adapter.LatestPollsAdapter;
 import in.magnumsoln.pollstest.adapter.PollsRecyclerAdapter;
+import in.magnumsoln.pollstest.adapter.TopicAdapter;
 import in.magnumsoln.pollstest.firebase.PollFetcher;
 import in.magnumsoln.pollstest.firebase.TopicFetcher;
 import in.magnumsoln.pollstest.interfaces.FinishFetchingDataCallback;
@@ -45,9 +48,9 @@ import in.magnumsoln.pollstest.model.Topic;
  */
 public class DashboardFragment extends Fragment implements FinishFetchingDataCallback {
 
-    private PollsRecyclerAdapter pollsRecyclerAdapter;
-    private RecyclerView pollsRecyclerView;
-    private CarouselView carouselView;
+    private LatestPollsAdapter latestPollsAdapter;
+    private TopicAdapter topicAdapter;
+    private RecyclerView pollsRecyclerView,topicRecyclerView;
     private SwipeRefreshLayout swipeRefreshLayout;
     private ShimmerFrameLayout shimmer;
     private RelativeLayout shimmerLayout;
@@ -70,15 +73,16 @@ public class DashboardFragment extends Fragment implements FinishFetchingDataCal
         context = getActivity();
         finishFetchingDataCallbackInterface = this;
         pollsRecyclerView = view.findViewById(R.id.pollsRecyclerView);
-        carouselView = view.findViewById(R.id.carouselView);
+        topicRecyclerView = view.findViewById(R.id.topicRecyclerView);
         swipeRefreshLayout = view.findViewById(R.id.swipeRefresher);
         shimmer = view.findViewById(R.id.shimmer);
         shimmerLayout = view.findViewById(R.id.shimmer_layout);
         latestQuestion = view.findViewById(R.id.txtLatestQues);
         shimmer.startShimmer();
         mSharedPreferences = context.getSharedPreferences("user_details", Context.MODE_PRIVATE);
-        pollsRecyclerView.setLayoutManager(new LinearLayoutManager(context));
-        pollsRecyclerView.addItemDecoration(new DividerItemDecoration(pollsRecyclerView.getContext(), DividerItemDecoration.VERTICAL));
+        pollsRecyclerView.setLayoutManager(new LinearLayoutManager(context,LinearLayoutManager.HORIZONTAL,false));
+        topicRecyclerView.setLayoutManager(new LinearLayoutManager(context));
+        //pollsRecyclerView.addItemDecoration(new DividerItemDecoration(pollsRecyclerView.getContext(), DividerItemDecoration.VERTICAL));
         new PollFetcher().fetchLatestPolls(finishFetchingDataCallbackInterface);
         new TopicFetcher().fetchTopics(finishFetchingDataCallbackInterface);
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
@@ -91,14 +95,6 @@ public class DashboardFragment extends Fragment implements FinishFetchingDataCal
             }
         });
         swipeRefreshLayout.setColorSchemeColors(context.getColor(R.color.colorAccent));
-        carouselView.setImageClickListener(new ImageClickListener() {
-            @Override
-            public void onClick(int position) {
-//                Toast.makeText(context,topics.get(position).getTOPIC_NAME(),Toast.LENGTH_SHORT).show();
-                startActivity(new Intent(context, CategoryActivity.class)
-                        .putExtra("category_name", topics.get(position).getTOPIC_NAME()));
-            }
-        });
         return view;
     }
 
@@ -106,40 +102,14 @@ public class DashboardFragment extends Fragment implements FinishFetchingDataCal
         try {
             if (collectionType.equalsIgnoreCase("POLL")) {
                 polls = (List<Poll>) object;
-                pollsRecyclerAdapter = new PollsRecyclerAdapter(context, polls);
-                pollsRecyclerView.setAdapter(pollsRecyclerAdapter);
+                latestPollsAdapter = new LatestPollsAdapter(context,polls);
+                pollsRecyclerView.setAdapter(latestPollsAdapter);
                 int visibility = (polls.size() == 0) ? View.GONE : View.VISIBLE;
                 latestQuestion.setVisibility(visibility);
             } else if (collectionType.equalsIgnoreCase("TOPIC")) {
                 topics = (List<Topic>) object;
-
-                carouselView.setViewListener(new ViewListener() {
-                    @Override
-                    public View setViewForPosition(int position) {
-                        View view = getLayoutInflater().inflate(R.layout.carouselview_layout, null);
-                        ImageView img = view.findViewById(R.id.carouselImg);
-                        final TextView topicName = view.findViewById(R.id.txtTopicLabel);
-                        final ShimmerFrameLayout carouselShimmer = view.findViewById(R.id.caroselShimmerTopic);
-                        topicName.setText(topics.get(position).getTOPIC_NAME());
-                        Picasso.get().load(topics.get(position).getIMAGE_URL()).resize(2048, 1600).onlyScaleDown()
-                                .error(R.drawable.sample).placeholder(R.drawable.sample)
-                                .into(img, new Callback() {
-                                    @Override
-                                    public void onSuccess() {
-                                        carouselShimmer.setVisibility(View.GONE);
-                                        topicName.setVisibility(View.GONE);
-                                    }
-
-                                    @Override
-                                    public void onError(Exception e) {
-                                        e.printStackTrace();
-                                        carouselShimmer.setVisibility(View.GONE);
-                                    }
-                                });
-                        return view;
-                    }
-                });
-                carouselView.setPageCount(topics.size());
+                topicAdapter = new TopicAdapter(context,topics);
+                topicRecyclerView.setAdapter(topicAdapter);
                 swipeRefreshLayout.setRefreshing(false);
                 new Handler().postDelayed(new Runnable() {
                     @Override
@@ -161,8 +131,8 @@ public class DashboardFragment extends Fragment implements FinishFetchingDataCal
     public Object onFailed(Object object, String collectionType) {
         if (collectionType.equalsIgnoreCase("POLL")) {
             polls = new ArrayList<>();
-            pollsRecyclerAdapter = new PollsRecyclerAdapter(context, polls);
-            pollsRecyclerView.setAdapter(pollsRecyclerAdapter);
+            latestPollsAdapter = new LatestPollsAdapter(context,polls);
+            pollsRecyclerView.setAdapter(latestPollsAdapter);
             latestQuestion.setVisibility(View.GONE);
         }
         return null;

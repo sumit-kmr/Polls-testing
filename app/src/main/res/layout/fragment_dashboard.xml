@@ -23,7 +23,8 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:orientation="vertical">
+                android:orientation="vertical"
+                android:gravity="center_horizontal">
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -31,7 +32,7 @@
                     android:layout_gravity="center_horizontal"
                     android:fontFamily="@font/comfortaa_semibold"
                     android:padding="5dp"
-                    android:text="@string/latest_questions"
+                    android:text="@string/latest_polls"
                     android:textColor="#000"
                     android:textSize="18sp"
                     android:id="@+id/txtLatestQues"/>
@@ -41,12 +42,13 @@
                     android:id="@+id/pollsRecyclerView"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:overScrollMode="never"
-                    android:scrollbars="none" />
+                    android:scrollbars="horizontal"
+                    android:scrollbarThumbHorizontal="@color/colorAccent"/>
 
                 <RelativeLayout
                     android:layout_width="match_parent"
-                    android:layout_height="250dp">
+                    android:layout_height="match_parent"
+                    android:gravity="center_horizontal">
 
                     <TextView
                         android:id="@+id/txtPopularTopic"
@@ -59,27 +61,20 @@
                         android:textColor="#000"
                         android:textSize="18sp" />
 
-                    <com.synnapps.carouselview.CarouselView
-                        android:id="@+id/carouselView"
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/topicRecyclerView"
                         android:layout_width="match_parent"
-                        android:layout_height="200dp"
+                        android:layout_height="match_parent"
                         android:layout_below="@id/txtPopularTopic"
-                        android:layout_marginLeft="20dp"
-                        android:layout_marginRight="20dp"
-                        android:layout_marginBottom="30dp"
-                        app:disableAutoPlayOnUserInteraction="true"
-                        app:fillColor="#25D368"
-                        app:pageColor="#000000"
-                        app:radius="6dp"
-                        app:slideInterval="3000"
-                        app:strokeColor="#FF777777"
-                        app:strokeWidth="1dp" />
+                        android:layout_marginTop="15dp"
+                        android:scrollbars="none"
+                        android:overScrollMode="never"/>
 
                 </RelativeLayout>
 
                 <View
                     android:layout_width="match_parent"
-                    android:layout_height="150dp" />
+                    android:layout_height="100dp" />
             </LinearLayout>
         </androidx.core.widget.NestedScrollView>
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>

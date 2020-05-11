@@ -1,5 +1,6 @@
 package in.magnumsoln.pollstest.firebase;
 
+import android.util.Log;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnFailureListener;
@@ -35,7 +36,6 @@ public class PollFetcher {
             db.collection("POLL")
                     .whereLessThanOrEqualTo("START_TIME", currentDate)
                     .orderBy("START_TIME", Query.Direction.DESCENDING)
-                    .limit(5)
                     .get()
                     .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
                         @Override
@@ -46,10 +46,13 @@ public class PollFetcher {
                             } else {
                                 List<DocumentSnapshot> documentsList = documentSnapshots.getDocuments();
                                 for (DocumentSnapshot documentSnapshot : documentsList) {
+                                    if(polls.size() == 5)   // limit to only 5 latest open polls
+                                        break;
                                     Timestamp start = (Timestamp) documentSnapshot.get("START_TIME");
                                     Timestamp close = (Timestamp) documentSnapshot.get("CLOSE_TIME");
                                     Timestamp declare = (Timestamp) documentSnapshot.get("DECLARE_TIME");
                                     if ((close == null) || (close.toDate().after(currentDate))) {
+                                        Log.w("inside for"," nsjnfs");
                                         Date start_ = start.toDate();
                                         Date close_ = (close == null) ? null : close.toDate();
                                         Date declare_ = (declare == null) ? null : declare.toDate();

@@ -17,16 +17,26 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
+            <ImageView
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:src="@drawable/app_logo"
+                android:layout_centerVertical="true"
+                android:layout_alignParentStart="true"
+                android:id="@+id/ic_toolbar"
+                android:layout_marginStart="0dp"/>
+
             <TextView
                 android:id="@+id/toolbar_title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
-                android:layout_marginLeft="5dp"
+                android:layout_marginStart="16dp"
                 android:fontFamily="@font/comfortaa_bold"
                 android:text="title"
-                android:textColor="#000"
-                android:textSize="20sp" />
+                android:textColor="@color/colorPrimaryDark"
+                android:textSize="20sp"
+                android:layout_toRightOf="@id/ic_toolbar"/>
 
             <TextView
                 android:id="@+id/txtCoins"
@@ -37,15 +47,14 @@
                 android:layout_marginRight="5dp"
                 android:fontFamily="@font/comfortaa_bold"
                 android:text="X 100"
-                android:textColor="#000"
-                android:textSize="20sp" />
+                android:textColor="@color/colorPrimaryDark"
+                android:textSize="18sp" />
 
             <ImageView
                 android:id="@+id/imgCoin"
                 android:layout_width="wrap_content"
                 android:layout_height="20dp"
                 android:layout_centerVertical="true"
-                android:layout_marginRight="10dp"
                 android:layout_toLeftOf="@id/txtCoins"
                 android:src="@drawable/coin" />
 

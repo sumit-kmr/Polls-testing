@@ -265,7 +265,7 @@ public class PollActivity extends AppCompatActivity implements RewardedVideoAdLi
         Picasso.get().load(currentPoll.getIMAGE_URL()).error(R.drawable.sample).into(imgPollImage);
 
         availableCoins = mSharedPreference.getInt("available_coins", 10);
-        nCoins.setText(" X " + availableCoins);
+        nCoins.setText("X " + availableCoins);
         // setup coin buttons
         if (availableCoins == 0) {
             coinButton2.setForeground(getDrawable(R.drawable.foreground_disabled));
@@ -285,9 +285,6 @@ public class PollActivity extends AppCompatActivity implements RewardedVideoAdLi
         Date c = Calendar.getInstance().getTime();
         String todaysDate = new SimpleDateFormat("dd-MM-yyyy").format(c);
         String savedDate = mSharedPreference.getString("date",null);
-        System.out.println("todays date: " + todaysDate);
-        System.out.println("saved date: " + savedDate);
-        System.out.println("LIMITS LEFT:: "+adLimitsLeft);
         if (todaysDate.equalsIgnoreCase(savedDate)) {
             System.out.println("DATE EQUAL.......");
         } else {
@@ -348,7 +345,7 @@ public class PollActivity extends AppCompatActivity implements RewardedVideoAdLi
         try {
             availableCoins--;
             mSharedPreference.edit().putInt("available_coins", (int) availableCoins).apply();
-            nCoins.setText(" X " + availableCoins);
+            nCoins.setText("X " + availableCoins);
             mFirestore.collection("USER").document(userId).get()
                     .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                         @Override
@@ -408,9 +405,9 @@ public class PollActivity extends AppCompatActivity implements RewardedVideoAdLi
                             String poll_status = getIntent().getStringExtra("poll_status");
                             if (poll_status.equalsIgnoreCase("OPEN")) {
                                 //OPEN
+                                submitButton.setVisibility(View.GONE);
                                 if (isPollUnlocked) {
                                     //question unlocked == true
-//                                isQuestionAttempted("open");
                                     popupCardView.setVisibility(View.GONE);
                                     imgPollImage.setForeground(null);
                                     mFirestore.collection("USER")
@@ -435,10 +432,10 @@ public class PollActivity extends AppCompatActivity implements RewardedVideoAdLi
                                                         opD.setForeground(null);
                                                         ques.setForeground(null);
                                                         enableScrollView();
-                                                        submitButton.setEnabled(false);
-                                                        submitButton.setBackground(getDrawable(R.drawable.gray));
-                                                        submit_button_text.setText("Poll result not declared yet");
-                                                        submit_button_text.setTextColor(Color.RED);
+//                                                        submitButton.setEnabled(false);
+//                                                        submitButton.setBackground(getDrawable(R.drawable.gray));
+//                                                        submit_button_text.setText("Poll result not declared yet");
+//                                                        submit_button_text.setTextColor(Color.RED);
                                                         switch ((int) selected_option) {
                                                             case 0:
                                                                 opA.setBackground(getDrawable(R.drawable.green_round_background));
@@ -466,10 +463,10 @@ public class PollActivity extends AppCompatActivity implements RewardedVideoAdLi
                                                         opD.setEnabled(true);
                                                         ques.setForeground(null);
                                                         enableScrollView();
-                                                        submitButton.setBackground(getDrawable(R.drawable.gray));
-                                                        submitButton.setEnabled(false);
-                                                        submit_button_text.setText("Win 4 coins on correct prediction");
-                                                        submit_button_text.setTextColor(Color.RED);
+//                                                        submitButton.setBackground(getDrawable(R.drawable.gray));
+//                                                        submitButton.setEnabled(false);
+//                                                        submit_button_text.setText("Win 4 coins on correct prediction");
+//                                                        submit_button_text.setTextColor(Color.RED);
                                                         progressBar.setVisibility(View.GONE);
                                                     }
                                                 }
@@ -482,7 +479,7 @@ public class PollActivity extends AppCompatActivity implements RewardedVideoAdLi
                                             });
                                 } else {
                                     // question unlocked == false
-                                    // blurry UI and status: close timer
+                                    // blurry UI
                                     imgPollImage.setForeground(getDrawable(disabled_foreground));
                                     opA.setForeground(getDrawable(disabled_foreground));
                                     opA.setEnabled(false);
@@ -494,10 +491,10 @@ public class PollActivity extends AppCompatActivity implements RewardedVideoAdLi
                                     opD.setEnabled(false);
                                     ques.setForeground(getDrawable(disabled_foreground));
                                     disableScrollView();
-                                    submitButton.setBackground(getDrawable(R.drawable.gray));
-                                    submitButton.setEnabled(false);
-                                    submit_button_text.setText("Close timer");
-                                    submit_button_text.setTextColor(Color.RED);
+//                                    submitButton.setBackground(getDrawable(R.drawable.gray));
+//                                    submitButton.setEnabled(false);
+//                                    submit_button_text.setText("Close timer");
+//                                    submit_button_text.setTextColor(Color.RED);
                                     popupCardView.setVisibility(View.VISIBLE);
                                     progressBar.setVisibility(View.GONE);
                                 }
@@ -596,6 +593,7 @@ public class PollActivity extends AppCompatActivity implements RewardedVideoAdLi
                                                         int greenBackground = R.drawable.green_round_background;
                                                         long selected_option = (long) documentSnapshot.get("SELECTED_OPTION");
                                                         long correct_option = currentPoll.getCORRECT_OPTION();
+                                                        long reward_amount = currentPoll.getREWARD_AMOUNT();
                                                         int requiredBackground =
                                                                 (selected_option == correct_option) ? greenBackground : redBackground;
 
@@ -635,7 +633,7 @@ public class PollActivity extends AppCompatActivity implements RewardedVideoAdLi
                                                                 getColor(R.color.colorAccent) : getColor(R.color.red);
                                                         submit_button_text.setTextColor(statusTextColor);
                                                         String status = (selected_option == correct_option) ?
-                                                                "Congrats!! You won 4 coins " + getEmojiByUnicode(0x1F603) :
+                                                                "Congrats!! You won "+reward_amount+" coins " + getEmojiByUnicode(0x1F603) :
                                                                 "Better luck next time " + getEmojiByUnicode(0x2639);
                                                         submit_button_text.setText(status);
                                                         progressBar.setVisibility(View.GONE);
@@ -645,7 +643,27 @@ public class PollActivity extends AppCompatActivity implements RewardedVideoAdLi
                                                         opB.setForeground(getDrawable(disabled_foreground));
                                                         opC.setForeground(getDrawable(disabled_foreground));
                                                         opD.setForeground(getDrawable(disabled_foreground));
-                                                        submit_button_text.setText("This poll is closed");
+                                                        int correct_op = (int) currentPoll.getCORRECT_OPTION();
+                                                        switch(correct_op)
+                                                        {
+                                                            case 0:
+                                                                A.setVisibility(View.GONE);
+                                                                tickA.setVisibility(View.VISIBLE);
+                                                                break;
+                                                            case 1:
+                                                                B.setVisibility(View.GONE);
+                                                                tickB.setVisibility(View.VISIBLE);
+                                                                break;
+                                                            case 2:
+                                                                C.setVisibility(View.GONE);
+                                                                tickC.setVisibility(View.VISIBLE);
+                                                                break;
+                                                            case 3:
+                                                                D.setVisibility(View.GONE);
+                                                                tickD.setVisibility(View.VISIBLE);
+                                                                break;
+                                                        }
+                                                        submit_button_text.setText("Result for this poll is declared");
                                                         submit_button_text.setTextColor(Color.RED);
                                                         progressBar.setVisibility(View.GONE);
                                                     }
@@ -663,7 +681,27 @@ public class PollActivity extends AppCompatActivity implements RewardedVideoAdLi
                                     opB.setForeground(getDrawable(disabled_foreground));
                                     opC.setForeground(getDrawable(disabled_foreground));
                                     opD.setForeground(getDrawable(disabled_foreground));
-                                    submit_button_text.setText("This poll is closed");
+                                    int correct_op = (int) currentPoll.getCORRECT_OPTION();
+                                    switch(correct_op)
+                                    {
+                                        case 0:
+                                            A.setVisibility(View.GONE);
+                                            tickA.setVisibility(View.VISIBLE);
+                                            break;
+                                        case 1:
+                                            B.setVisibility(View.GONE);
+                                            tickB.setVisibility(View.VISIBLE);
+                                            break;
+                                        case 2:
+                                            C.setVisibility(View.GONE);
+                                            tickC.setVisibility(View.VISIBLE);
+                                            break;
+                                        case 3:
+                                            D.setVisibility(View.GONE);
+                                            tickD.setVisibility(View.VISIBLE);
+                                            break;
+                                    }
+                                    submit_button_text.setText("Result for this poll is declared");
                                     submit_button_text.setTextColor(Color.RED);
                                     progressBar.setVisibility(View.GONE);
                                 }
@@ -700,7 +738,7 @@ public class PollActivity extends AppCompatActivity implements RewardedVideoAdLi
                             long poll_coins = (long) currentDocument.get("POLL_COINS");
                             long coins_redeemed = (long) currentDocument.get("COINS_REDEEMED");
                             availableCoins = poll_coins + share_coins - used_coins - coins_redeemed;
-                            nCoins.setText(" X " + availableCoins);
+                            nCoins.setText("X " + availableCoins);
                             mSharedPreference.edit().putInt("available_coins", (int) availableCoins).apply();
                             userId = currentDocument.getId();
                             checkPollStatus();
@@ -744,7 +782,7 @@ public class PollActivity extends AppCompatActivity implements RewardedVideoAdLi
     private void setupToolbar() {
         toolbar = findViewById(R.id.pollToolbar);
         nCoins = findViewById(R.id.txtCoins_poll);
-        nCoins.setText(" X " + mSharedPreference.getInt("available_coins", 0));
+        nCoins.setText("X " + mSharedPreference.getInt("available_coins", 0));
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -756,7 +794,7 @@ public class PollActivity extends AppCompatActivity implements RewardedVideoAdLi
     @Override
     protected void onResume() {
         super.onResume();
-        nCoins.setText(" X " + mSharedPreference.getInt("available_coins", 10));
+        nCoins.setText("X " + mSharedPreference.getInt("available_coins", 10));
     }
 
     public String getEmojiByUnicode(int unicode) {
@@ -818,7 +856,7 @@ public class PollActivity extends AppCompatActivity implements RewardedVideoAdLi
 
     @Override
     public void onRewardedVideoAdFailedToLoad(int i) {
-        Toast.makeText(this, "Failed to load video", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, "You are offline", Toast.LENGTH_SHORT).show();
     }
 
     @Override

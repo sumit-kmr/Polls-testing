@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name">Polls</string>
-    <string name="latest_questions">Latest Questions</string>
+    <string name="latest_polls">Latest Polls</string>
     <string name="popular_topics">Popular Topics</string>
     <string name="this_is_a_question">This is a question</string>
     <string name="home">Home</string>

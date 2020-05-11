@@ -81,6 +81,11 @@ public class CustomDialogChangePaytmNumber extends Dialog implements
         try {
             switch (v.getId()) {
                 case R.id.btnUpdate:
+                    if(!InternetChecker.isInternetAvailable(c))
+                    {
+                        Toast.makeText(c, "You're offline", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
                     final String enteredNumber = paytmNum.getText().toString();
                     String registeredNumber = mSharedPreferences.getString("phone_no", null);
                     if (currentPaytm.equalsIgnoreCase(enteredNumber)) {

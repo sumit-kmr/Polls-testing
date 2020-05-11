@@ -31,15 +31,14 @@
                 android:layout_marginEnd="5dp"
                 android:fontFamily="@font/comfortaa_bold"
                 android:text="X 100"
-                android:textColor="#000"
-                android:textSize="20sp" />
+                android:textColor="@color/colorPrimaryDark"
+                android:textSize="18sp" />
 
             <ImageView
                 android:id="@+id/imgCoin_poll"
                 android:layout_width="wrap_content"
                 android:layout_height="20dp"
                 android:layout_centerVertical="true"
-                android:layout_marginEnd="10dp"
                 android:layout_toStartOf="@id/txtCoins_poll"
                 android:src="@drawable/coin" />
         </RelativeLayout>
@@ -281,7 +280,7 @@
                 android:fontFamily="@font/comfortaa_bold"
                 android:text="STATUS"
                 android:textColor="#000"
-                android:textSize="20sp"
+                android:textSize="18sp"
                 android:id="@+id/txtsubmit"/>
         </RelativeLayout>
 

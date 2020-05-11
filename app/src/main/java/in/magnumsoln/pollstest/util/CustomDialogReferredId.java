@@ -99,6 +99,11 @@ public class CustomDialogReferredId extends Dialog implements android.view.View.
                     dismiss();
                     break;
                 case R.id.btnSubmitReferId:
+                    if(!InternetChecker.isInternetAvailable(getContext()))
+                    {
+                        Toast.makeText(activity, "You're offline", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
                     final String enteredReferId = edtReferId.getText().toString();
                     if ((enteredReferId.equalsIgnoreCase(registeredNumber)) ||
                             enteredReferId.equalsIgnoreCase(paytmNumber)) {
