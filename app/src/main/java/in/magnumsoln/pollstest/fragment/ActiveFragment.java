@@ -47,7 +47,7 @@ public class ActiveFragment extends Fragment implements FinishFetchingDataCallba
         activity = (CategoryActivity) getActivity();
         currentFragment = this;
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        recyclerView.addItemDecoration(new DividerItemDecoration(recyclerView.getContext(), DividerItemDecoration.VERTICAL));
+        //recyclerView.addItemDecoration(new DividerItemDecoration(recyclerView.getContext(), DividerItemDecoration.VERTICAL));
         new PollFetcher().fetchActivePolls(this,activity.title);
         active_refresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override

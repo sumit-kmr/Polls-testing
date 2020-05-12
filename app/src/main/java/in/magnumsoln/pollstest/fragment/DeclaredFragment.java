@@ -49,7 +49,7 @@ public class DeclaredFragment extends Fragment implements FinishFetchingDataCall
         categoryActivity = (CategoryActivity) getActivity();
         currentFragment = this;
         declaredRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        declaredRecyclerView.addItemDecoration(new DividerItemDecoration(declaredRecyclerView.getContext(),DividerItemDecoration.VERTICAL));
+        //declaredRecyclerView.addItemDecoration(new DividerItemDecoration(declaredRecyclerView.getContext(),DividerItemDecoration.VERTICAL));
         new PollFetcher().fetchDeclaredPolls(this,categoryActivity.title);
         declared_refresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override

@@ -97,7 +97,11 @@ public class ProfileFragment extends Fragment
         btnRateUs.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store")));
+                try {
+                    startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=in.magnumsoln.polls")));
+                } catch (android.content.ActivityNotFoundException anfe) {
+                    startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=in.magnumsoln.polls")));
+                }
             }
         });
     }
@@ -146,7 +150,7 @@ public class ProfileFragment extends Fragment
                                                                             .putInt("available_coins", (int) available_coin - 100)
                                                                             .apply();
                                                                     amountEarned.setText("Rs. " + (coin_redeemed + 100));
-                                                                    nCoins.setText("X " + (available_coin - 100));
+                                                                    nCoins.setText("X  " + (available_coin - 100));
                                                                     btnReedem.setText("Redeem 100");
                                                                     btnReedem.setEnabled(false);
                                                                     btnReedem.setForeground(context
@@ -204,7 +208,7 @@ public class ProfileFragment extends Fragment
                     Intent shareIntent = new Intent(Intent.ACTION_SEND);
                     shareIntent.setType("text/plain");
                     shareIntent.putExtra(Intent.EXTRA_SUBJECT, "Polls");
-                    String shareMessage = "Predict and win Paytm cash. Download Polls\n\n https://play.google.com/store/ \n\n";
+                    String shareMessage = "Predict and win Paytm cash. Download Polls\n\n https://play.google.com/store/apps/details?id=in.magnumsoln.polls \n\n";
                     shareIntent.putExtra(Intent.EXTRA_TEXT, shareMessage);
                     startActivity(Intent.createChooser(shareIntent, "Share using:"));
                 } catch (Exception e) {
@@ -222,7 +226,7 @@ public class ProfileFragment extends Fragment
                     Intent shareIntent = new Intent(Intent.ACTION_SEND);
                     shareIntent.setType("text/plain");
                     shareIntent.putExtra(Intent.EXTRA_SUBJECT, "Polls");
-                    String shareMessage = "Predict and win Paytm cash. Download Polls\n\n https://play.google.com/store/ \n\n";
+                    String shareMessage = "Predict and win Paytm cash. Download Polls\n\n https://play.google.com/store/apps/details?id=in.magnumsoln.polls \n\n";
                     shareMessage = shareMessage + "Use refer ID " + reg_ph + " to get referral bonus.";
                     shareIntent.putExtra(Intent.EXTRA_TEXT, shareMessage);
                     startActivity(Intent.createChooser(shareIntent, "Share using:"));
@@ -254,7 +258,7 @@ public class ProfileFragment extends Fragment
                             txtPaytmNo.setText(paytm_no);
                             amountEarned.setText("Rs. " + coin_redeemed);
                             mSharedPreference.edit().putInt("available_coins", available_coins).apply();
-                            nCoins.setText("X " + available_coins);
+                            nCoins.setText("X  " + available_coins);
                             userId = curr.getId();
                             editButtonListener();
                             referIdListener();
@@ -294,7 +298,7 @@ public class ProfileFragment extends Fragment
                             txtPaytmNo.setText(paytm_no);
                             amountEarned.setText("Rs. " + coin_redeemed);
                             mSharedPreference.edit().putInt("available_coins", available_coins).apply();
-                            nCoins.setText("X " + available_coins);
+                            nCoins.setText("X  " + available_coins);
                             userId = curr.getId();
                             swipeRefreshLayout.setRefreshing(false);
                             if (available_coins >= 100 && !money_req) {
@@ -348,6 +352,7 @@ public class ProfileFragment extends Fragment
                 txtPaytmNo.setTextColor(Color.parseColor("#000000"));
             }
         }, 1000);
+        refresh();
     }
 
 
@@ -355,6 +360,7 @@ public class ProfileFragment extends Fragment
     public void referComplete(long shareCoins, String referredBy, int availableCoins) {
         referred_by = referredBy;
         mSharedPreference.edit().putInt("available_coins", availableCoins).apply();
-        nCoins.setText("X " + availableCoins);
+        nCoins.setText("X  " + availableCoins);
+        refresh();
     }
 }

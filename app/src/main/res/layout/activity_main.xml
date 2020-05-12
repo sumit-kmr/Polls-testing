@@ -44,9 +44,9 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentRight="true"
                 android:layout_centerVertical="true"
-                android:layout_marginRight="5dp"
+                android:layout_marginRight="8dp"
                 android:fontFamily="@font/comfortaa_bold"
-                android:text="X 100"
+                android:text="X  100"
                 android:textColor="@color/colorPrimaryDark"
                 android:textSize="18sp" />
 
@@ -55,7 +55,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="20dp"
                 android:layout_centerVertical="true"
-                android:layout_toLeftOf="@id/txtCoins"
+                android:layout_toStartOf="@id/txtCoins"
                 android:src="@drawable/coin" />
 
         </RelativeLayout>
@@ -75,10 +75,13 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:background="#fff"
-        android:elevation="3dp"
+        android:elevation="16dp"
         app:itemBackground="?attr/selectableItemBackgroundBorderless"
         app:menu="@menu/bottom_navigation_menu_items"
-        android:id="@+id/bottomNavigationBar"/>
+        android:id="@+id/bottomNavigationBar"
+        app:labelVisibilityMode="unlabeled"
+        app:itemIconSize="32dp"
+        app:itemIconTint="@color/colorPrimaryDark"/>
 
 
 </RelativeLayout>

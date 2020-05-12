@@ -13,6 +13,7 @@ import android.widget.Toast;
 
 import com.facebook.shimmer.ShimmerFrameLayout;
 import com.squareup.picasso.Callback;
+import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
@@ -22,6 +23,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import in.magnumsoln.pollstest.R;
 import in.magnumsoln.pollstest.activity.PollActivity;
 import in.magnumsoln.pollstest.model.Poll;
+import in.magnumsoln.pollstest.util.InternetChecker;
 
 public class PollsRecyclerAdapter extends RecyclerView.Adapter<PollsRecyclerAdapter.PollsViewHolder> {
 
@@ -43,7 +45,44 @@ public class PollsRecyclerAdapter extends RecyclerView.Adapter<PollsRecyclerAdap
     public void onBindViewHolder(@NonNull final PollsViewHolder holder, final int position) {
         try {
             holder.txtQuestion.setText(polls.get(position).getQUESTION());
-            String imageUrl = polls.get(position).getIMAGE_URL();
+            final String imageUrl = polls.get(position).getIMAGE_URL();
+
+            Picasso.with(context)
+                    .load(imageUrl)
+                    .resize(2048, 1600).onlyScaleDown()
+                    .networkPolicy(NetworkPolicy.OFFLINE)
+                    .error(R.drawable.sample)
+                    .placeholder(R.drawable.sample)
+                    .into(holder.imageView, new Callback() {
+                        @Override
+                        public void onSuccess() {
+                            holder.shimmer.setVisibility(View.GONE);
+                        }
+
+                        @Override
+                        public void onError() {
+                            //Try again online if cache failed
+                            Picasso.with(context)
+                                    .load(imageUrl)
+                                    .resize(2048, 1600).onlyScaleDown()
+                                    .error(R.drawable.sample)
+                                    .placeholder(R.drawable.sample)
+                                    .into(holder.imageView, new Callback() {
+                                        @Override
+                                        public void onSuccess() {
+                                            holder.shimmer.setVisibility(View.GONE);
+                                        }
+
+                                        @Override
+                                        public void onError() {
+                                            holder.shimmer.setVisibility(View.GONE);
+                                        }
+                                    });
+                        }
+                    });
+
+            /////////
+            /*
             Picasso.get().load(imageUrl).resize(2048, 1600).onlyScaleDown()
                     .error(R.drawable.sample).placeholder(R.drawable.sample)
                     .into(holder.imgPollThumbnail, new Callback() {
@@ -61,9 +100,15 @@ public class PollsRecyclerAdapter extends RecyclerView.Adapter<PollsRecyclerAdap
                             holder.imageShimmer.setVisibility(View.GONE);
                         }
                     });
+             */
+            //////////
             holder.recycler_item.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
+                    if(!InternetChecker.isInternetAvailable(context)){
+                        Toast.makeText(context, "You're offline", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
                     Intent intent = new Intent(context, PollActivity.class);
                     intent.putExtra("poll", polls.get(position));
                     intent.putExtra("poll_status", polls.get(position).getSTATUS());
@@ -89,15 +134,15 @@ public class PollsRecyclerAdapter extends RecyclerView.Adapter<PollsRecyclerAdap
 
     class PollsViewHolder extends RecyclerView.ViewHolder{
         private TextView txtQuestion;
-        private ImageView imgPollThumbnail;
+        private ImageView imageView;
         private RelativeLayout recycler_item;
-        private ShimmerFrameLayout imageShimmer;
+        private ShimmerFrameLayout shimmer;
         public PollsViewHolder(@NonNull View itemView) {
             super(itemView);
             this.txtQuestion = itemView.findViewById(R.id.txtQuestion);
-            this.imgPollThumbnail = itemView.findViewById(R.id.imgPollThumbnail);
+            this.imageView = itemView.findViewById(R.id.imgPollThumbnail);
             this.recycler_item = itemView.findViewById(R.id.polls_recycler_item);
-            this.imageShimmer = itemView.findViewById(R.id.imgShimmerRecItem);
+            this.shimmer = itemView.findViewById(R.id.imgShimmerRecItem);
         }
     }
 }

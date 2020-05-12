@@ -3,6 +3,7 @@ package in.magnumsoln.pollstest.adapter;
 import android.content.Context;
 import android.content.Intent;
 import android.media.Image;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,6 +12,7 @@ import android.widget.Toast;
 
 import com.facebook.shimmer.ShimmerFrameLayout;
 import com.squareup.picasso.Callback;
+import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
@@ -20,6 +22,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import in.magnumsoln.pollstest.R;
 import in.magnumsoln.pollstest.activity.PollActivity;
 import in.magnumsoln.pollstest.model.Poll;
+import in.magnumsoln.pollstest.util.InternetChecker;
 
 public class LatestPollsAdapter extends RecyclerView.Adapter<LatestPollsAdapter.LatestPollViewHolder> {
 
@@ -40,8 +43,46 @@ public class LatestPollsAdapter extends RecyclerView.Adapter<LatestPollsAdapter.
     @Override
     public void onBindViewHolder(@NonNull final LatestPollViewHolder holder, final int position) {
         try{
-            String imageUrl = polls.get(position).getIMAGE_URL();
-            Picasso.get().load(imageUrl).resize(2048, 1600).onlyScaleDown()
+            final String imageUrl = polls.get(position).getIMAGE_URL();
+
+            Picasso.with(context)
+                    .load(imageUrl)
+                    .resize(2048, 1600).onlyScaleDown()
+                    .networkPolicy(NetworkPolicy.OFFLINE)
+                    .error(R.drawable.sample)
+                    .placeholder(R.drawable.sample)
+                    .into(holder.imageView, new Callback() {
+                        @Override
+                        public void onSuccess() {
+                            holder.shimmer.setVisibility(View.GONE);
+                        }
+
+                        @Override
+                        public void onError() {
+                            //Try again online if cache failed
+                            Picasso.with(context)
+                                    .load(imageUrl)
+                                    .resize(2048, 1600).onlyScaleDown()
+                                    .error(R.drawable.sample)
+                                    .placeholder(R.drawable.sample)
+                                    .into(holder.imageView, new Callback() {
+                                        @Override
+                                        public void onSuccess() {
+                                            holder.shimmer.setVisibility(View.GONE);
+                                        }
+
+                                        @Override
+                                        public void onError() {
+                                            holder.shimmer.setVisibility(View.GONE);
+                                        }
+                                    });
+                        }
+                    });
+
+            ///////
+            /*
+            Picasso.get().load(imageUrl)
+                    .resize(2048, 1600).onlyScaleDown()
                     .error(R.drawable.sample).placeholder(R.drawable.sample)
                     .into(holder.imageView, new Callback() {
                         @Override
@@ -51,13 +92,22 @@ public class LatestPollsAdapter extends RecyclerView.Adapter<LatestPollsAdapter.
 
                         @Override
                         public void onError(Exception e) {
+                            //////
                             e.printStackTrace();
                             holder.shimmer.setVisibility(View.GONE);
+                            //////
                         }
                     });
+
+             */
+            ////////
             holder.imageView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
+                    if(!InternetChecker.isInternetAvailable(context)){
+                        Toast.makeText(context, "You're offline", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
                     Intent intent = new Intent(context, PollActivity.class);
                     intent.putExtra("poll", polls.get(position));
                     intent.putExtra("poll_status", polls.get(position).getSTATUS());

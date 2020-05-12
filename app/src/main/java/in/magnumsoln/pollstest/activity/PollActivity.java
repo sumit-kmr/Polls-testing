@@ -2,8 +2,12 @@ package in.magnumsoln.pollstest.activity;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageView;
@@ -20,9 +24,12 @@ import com.google.android.gms.ads.reward.RewardedVideoAd;
 import com.google.android.gms.ads.reward.RewardedVideoAdListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.squareup.picasso.Callback;
+import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
 
 import java.text.SimpleDateFormat;
@@ -37,6 +44,9 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.cardview.widget.CardView;
 import in.magnumsoln.pollstest.R;
 import in.magnumsoln.pollstest.model.Poll;
+import in.magnumsoln.pollstest.util.BlurBuilder;
+import in.magnumsoln.pollstest.util.InternetChecker;
+import jp.wasabeef.blurry.Blurry;
 
 public class PollActivity extends AppCompatActivity implements RewardedVideoAdListener {
 
@@ -44,7 +54,7 @@ public class PollActivity extends AppCompatActivity implements RewardedVideoAdLi
     private TextView nCoins, ques, a, b, c, d, submit_button_text, A, B, C, D, videoAdCreditDisplayer;
     private RelativeLayout adButton, coinButton, coinButton2;
     private SharedPreferences mSharedPreference;
-    private RelativeLayout progressBar, submitButton;
+    private RelativeLayout progressBar, submitButton, middleLayer, topLayer, bottomLayer;
     private FirebaseFirestore mFirestore;
     private Poll currentPoll;
     private Context context;
@@ -53,9 +63,8 @@ public class PollActivity extends AppCompatActivity implements RewardedVideoAdLi
     private String userId;
     private int adLimitsLeft;
     private LinearLayout opA, opB, opC, opD;
-    private int disabled_foreground;
-    private CardView popupCardView;
-    private ImageView imgPollImage, tickA, tickB, tickC, tickD;
+    private int disabled_foreground,disabled_foreground_round;
+    private ImageView imgPollImage, tickA, tickB, tickC, tickD, imgTopLayer, imgMiddleLayer;
     private ScrollView scrollView;
     private RewardedVideoAd mAd;
 
@@ -78,7 +87,14 @@ public class PollActivity extends AppCompatActivity implements RewardedVideoAdLi
         d = findViewById(R.id.d);
         ques = findViewById(R.id.txtQuestion);
         imgPollImage = findViewById(R.id.imgPollImage);
-        popupCardView = findViewById(R.id.popup_card_view);
+
+        // layers
+        bottomLayer = findViewById(R.id.bottomLayer);
+        middleLayer = findViewById(R.id.middleLayer);
+        topLayer = findViewById(R.id.topLayer);
+        imgTopLayer = findViewById(R.id.imgTopLayer);
+        imgMiddleLayer = findViewById(R.id.imgMiddleLayer);
+
         submitButton = findViewById(R.id.submitButton);
         submit_button_text = findViewById(R.id.txtsubmit);
         scrollView = findViewById(R.id.scrollView);
@@ -92,9 +108,10 @@ public class PollActivity extends AppCompatActivity implements RewardedVideoAdLi
         tickD = findViewById(R.id.tickd);
         mAd = MobileAds.getRewardedVideoAdInstance(this);
         mAd.setRewardedVideoAdListener(this);
-        mAd.loadAd("ca-app-pub-3940256099942544/5224354917",new AdRequest.Builder().build());
+        mAd.loadAd("ca-app-pub-3940256099942544/5224354917", new AdRequest.Builder().build());
         videoAdCreditDisplayer = findViewById(R.id.video_ad_credits_left);
         disabled_foreground = R.drawable.foreground_disabled;
+        disabled_foreground_round = R.drawable.foreground_disabled_round;
         mFirestore = FirebaseFirestore.getInstance();
         currentPoll = (Poll) getIntent().getSerializableExtra("poll");
         isPollUnlocked = mSharedPreference.getBoolean(currentPoll.getPOLL_ID(), false);
@@ -105,6 +122,16 @@ public class PollActivity extends AppCompatActivity implements RewardedVideoAdLi
         fetchCoinsAndUserId();
         setCoinAndAdButtonListener();
         setOptionsListener();
+    }
+
+    void hideLayers() {
+        middleLayer.setVisibility(View.GONE);
+        topLayer.setVisibility(View.GONE);
+    }
+
+    void showLayers() {
+        middleLayer.setVisibility(View.VISIBLE);
+        topLayer.setVisibility(View.VISIBLE);
     }
 
     int option_selected = -1;
@@ -123,6 +150,7 @@ public class PollActivity extends AppCompatActivity implements RewardedVideoAdLi
                 opC.setBackground(getDrawable(R.drawable.option_button));
                 opD.setEnabled(true);
                 opD.setBackground(getDrawable(R.drawable.option_button));
+                submitButton.setVisibility(View.VISIBLE);
                 submitButton.setBackground(getDrawable(R.drawable.white_ripple_on_green_background));
                 submitButton.setForeground(null);
                 submitButton.setEnabled(true);
@@ -143,6 +171,7 @@ public class PollActivity extends AppCompatActivity implements RewardedVideoAdLi
                 opC.setBackground(getDrawable(R.drawable.option_button));
                 opD.setEnabled(true);
                 opD.setBackground(getDrawable(R.drawable.option_button));
+                submitButton.setVisibility(View.VISIBLE);
                 submitButton.setBackground(getDrawable(R.drawable.white_ripple_on_green_background));
                 submitButton.setForeground(null);
                 submitButton.setEnabled(true);
@@ -163,6 +192,7 @@ public class PollActivity extends AppCompatActivity implements RewardedVideoAdLi
                 opB.setBackground(getDrawable(R.drawable.option_button));
                 opD.setEnabled(true);
                 opD.setBackground(getDrawable(R.drawable.option_button));
+                submitButton.setVisibility(View.VISIBLE);
                 submitButton.setBackground(getDrawable(R.drawable.white_ripple_on_green_background));
                 submitButton.setForeground(null);
                 submitButton.setEnabled(true);
@@ -183,6 +213,7 @@ public class PollActivity extends AppCompatActivity implements RewardedVideoAdLi
                 opC.setBackground(getDrawable(R.drawable.option_button));
                 opB.setEnabled(true);
                 opB.setBackground(getDrawable(R.drawable.option_button));
+                submitButton.setVisibility(View.VISIBLE);
                 submitButton.setBackground(getDrawable(R.drawable.white_ripple_on_green_background));
                 submitButton.setForeground(null);
                 submitButton.setEnabled(true);
@@ -194,16 +225,39 @@ public class PollActivity extends AppCompatActivity implements RewardedVideoAdLi
         submitButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (option_selected < 0)
-                    Toast.makeText(context, "Select a option", Toast.LENGTH_SHORT).show();
-                else {
-                    submitResponse();
-                    submitButton.setEnabled(false);
-                    opA.setEnabled(false);
-                    opB.setEnabled(false);
-                    opC.setEnabled(false);
-                    opD.setEnabled(false);
+                if (!InternetChecker.isInternetAvailable(context)) {
+                    Toast.makeText(context, "You're offline", Toast.LENGTH_SHORT).show();
+                    return;
                 }
+                // check if poll is closed or not (close time may arrive while poll is open)
+                mFirestore.collection("POLL").document(currentPoll.getPOLL_ID()).get()
+                        .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                            @Override
+                            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                                if (!documentSnapshot.exists())
+                                    Toast.makeText(context, "This poll does not exist", Toast.LENGTH_SHORT).show();
+                                else {
+                                    Date currentTime = Calendar.getInstance().getTime();
+                                    Timestamp close_time = (Timestamp) documentSnapshot.get("CLOSE_TIME");
+                                    if (close_time != null && close_time.toDate().before(currentTime)) {
+                                        // poll is closed, do not proceed
+                                        Toast.makeText(context, "This poll is closed", Toast.LENGTH_SHORT).show();
+                                    } else {
+                                        // proceed to submit response
+                                        if (option_selected < 0)
+                                            Toast.makeText(context, "Select a option", Toast.LENGTH_SHORT).show();
+                                        else {
+                                            submitResponse();
+                                            submitButton.setEnabled(false);
+                                            opA.setEnabled(false);
+                                            opB.setEnabled(false);
+                                            opC.setEnabled(false);
+                                            opD.setEnabled(false);
+                                        }
+                                    }
+                                }
+                            }
+                        });
             }
         });
 
@@ -234,7 +288,7 @@ public class PollActivity extends AppCompatActivity implements RewardedVideoAdLi
                             onBackPressed();
                         }
                     });
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             Toast.makeText(context, "Some error occured", Toast.LENGTH_SHORT).show();
         }
@@ -243,34 +297,94 @@ public class PollActivity extends AppCompatActivity implements RewardedVideoAdLi
     boolean adsEnabled;
 
     private void setUpPoll() {
+        blurBackground();
         ques.setText(currentPoll.getQUESTION());
         List<String> options = currentPoll.getOPTIONS();
         int size = options.size();
-        if(size>0)
+        if (size > 0)
             a.setText(currentPoll.getOPTIONS().get(0));
         else
             opA.setVisibility(View.GONE);
-        if(size>1)
+        if (size > 1)
             b.setText(currentPoll.getOPTIONS().get(1));
         else
             opB.setVisibility(View.GONE);
-        if(size>2)
+        if (size > 2)
             c.setText(currentPoll.getOPTIONS().get(2));
         else
             opC.setVisibility(View.GONE);
-        if(size>3)
+        if (size > 3)
             d.setText(currentPoll.getOPTIONS().get(3));
         else
             opD.setVisibility(View.GONE);
-        Picasso.get().load(currentPoll.getIMAGE_URL()).error(R.drawable.sample).into(imgPollImage);
+        //////////
+        Picasso.with(context)
+                .load(currentPoll.getIMAGE_URL())
+                .resize(2048, 1600).onlyScaleDown()
+                .networkPolicy(NetworkPolicy.OFFLINE)
+                .error(R.drawable.sample)
+                .placeholder(R.drawable.sample)
+                .into(imgPollImage, new Callback() {
+                    @Override
+                    public void onSuccess() { }
+
+                    @Override
+                    public void onError() {
+                        //Try again online if cache failed
+                        Picasso.with(context)
+                                .load(currentPoll.getIMAGE_URL())
+                                .resize(2048, 1600).onlyScaleDown()
+                                .error(R.drawable.sample)
+                                .placeholder(R.drawable.sample)
+                                .into(imgPollImage, new Callback() {
+                                    @Override
+                                    public void onSuccess() { }
+
+                                    @Override
+                                    public void onError() { }
+                                });
+                    }
+                });
+        //////////
+        Picasso.with(context)
+                .load(currentPoll.getIMAGE_URL())
+                .resize(2048, 1600).onlyScaleDown()
+                .networkPolicy(NetworkPolicy.OFFLINE)
+                .error(R.drawable.sample)
+                .placeholder(R.drawable.sample)
+                .into(imgTopLayer, new Callback() {
+                    @Override
+                    public void onSuccess() { }
+
+                    @Override
+                    public void onError() {
+                        //Try again online if cache failed
+                        Picasso.with(context)
+                                .load(currentPoll.getIMAGE_URL())
+                                .resize(2048, 1600).onlyScaleDown()
+                                .error(R.drawable.sample)
+                                .placeholder(R.drawable.sample)
+                                .into(imgTopLayer, new Callback() {
+                                    @Override
+                                    public void onSuccess() { }
+
+                                    @Override
+                                    public void onError() { }
+                                });
+                    }
+                });
+        //////////
+
+        //Picasso.get().load(currentPoll.getIMAGE_URL()).error(R.drawable.sample).into(imgPollImage);
+        //Picasso.get().load(currentPoll.getIMAGE_URL()).error(R.drawable.sample).into(imgTopLayer);
 
         availableCoins = mSharedPreference.getInt("available_coins", 10);
-        nCoins.setText("X " + availableCoins);
+        nCoins.setText("X  " + availableCoins);
         // setup coin buttons
-        if (availableCoins == 0) {
-            coinButton2.setForeground(getDrawable(R.drawable.foreground_disabled));
+        if (availableCoins <= 0) {
+            coinButton2.setForeground(getDrawable(disabled_foreground_round));
             coinButton2.setEnabled(false);
-            coinButton.setForeground(getDrawable(disabled_foreground));
+            coinButton.setForeground(getDrawable(disabled_foreground_round));
             coinButton.setEnabled(false);
         }
         //check for ads enabled
@@ -284,7 +398,7 @@ public class PollActivity extends AppCompatActivity implements RewardedVideoAdLi
         // update video ad limits
         Date c = Calendar.getInstance().getTime();
         String todaysDate = new SimpleDateFormat("dd-MM-yyyy").format(c);
-        String savedDate = mSharedPreference.getString("date",null);
+        String savedDate = mSharedPreference.getString("date", null);
         if (todaysDate.equalsIgnoreCase(savedDate)) {
             System.out.println("DATE EQUAL.......");
         } else {
@@ -292,14 +406,41 @@ public class PollActivity extends AppCompatActivity implements RewardedVideoAdLi
             adLimitsLeft = 10;
             mSharedPreference.edit().putInt("limit_remaining", 10).apply();
         }
-        videoAdCreditDisplayer.setText(adLimitsLeft+" credits left today");
+        videoAdCreditDisplayer.setText(adLimitsLeft + " credits left today");
         adButton.setEnabled(false);
-        adButton.setForeground(getDrawable(disabled_foreground));
+        adButton.setForeground(getDrawable(disabled_foreground_round));
         if (adLimitsLeft == 0) {
             adButton.setEnabled(false);
-            adButton.setForeground(getDrawable(disabled_foreground));
+            adButton.setForeground(getDrawable(disabled_foreground_round));
             videoAdCreditDisplayer.setText("No credits for today");
         }
+    }
+
+    void blurBackground(){
+        middleLayer.post(new Runnable() {
+            @Override
+            public void run() {
+                bottomLayer.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            bottomLayer.setDrawingCacheEnabled(true);
+                            bottomLayer.buildDrawingCache();
+                            Bitmap bm = bottomLayer.getDrawingCache();
+                            final Bitmap resultBitmap = BlurBuilder.blur(context, bm);
+                            middleLayer.post(new Runnable() {
+                                @Override
+                                public void run() {
+                                    imgMiddleLayer.setImageBitmap(resultBitmap);
+                                }
+                            });
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                });
+            }
+        });
     }
 
     private void setCoinAndAdButtonListener() {
@@ -336,7 +477,12 @@ public class PollActivity extends AppCompatActivity implements RewardedVideoAdLi
 //                submitButton.setForeground(null);
 //                submit_button_text.setText("Win 4 coins on correct prediction");
 //                submit_button_text.setTextColor(Color.WHITE);
-                mAd.show();
+                if(!InternetChecker.isInternetAvailable(context)){
+                    Toast.makeText(context, "You're offline", Toast.LENGTH_SHORT).show();
+                }
+                else {
+                    mAd.show();
+                }
             }
         });
     }
@@ -345,7 +491,7 @@ public class PollActivity extends AppCompatActivity implements RewardedVideoAdLi
         try {
             availableCoins--;
             mSharedPreference.edit().putInt("available_coins", (int) availableCoins).apply();
-            nCoins.setText("X " + availableCoins);
+            nCoins.setText("X  " + availableCoins);
             mFirestore.collection("USER").document(userId).get()
                     .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                         @Override
@@ -368,7 +514,10 @@ public class PollActivity extends AppCompatActivity implements RewardedVideoAdLi
                         }
                     });
             mSharedPreference.edit().putBoolean(currentPoll.getPOLL_ID(), true).apply();
-            popupCardView.setVisibility(View.GONE);
+
+            //hide layers
+            hideLayers();
+
             enableScrollView();
             imgPollImage.setForeground(null);
             ques.setForeground(null);
@@ -382,9 +531,10 @@ public class PollActivity extends AppCompatActivity implements RewardedVideoAdLi
             opD.setForeground(null);
             submitButton.setBackground(getDrawable(R.drawable.gray));
             submitButton.setForeground(null);
-            submit_button_text.setText("Win 4 coins on correct prediction");
+            submitButton.setEnabled(false);
+            submit_button_text.setText("Win " + currentPoll.getREWARD_AMOUNT() + " coins on correct prediction");
             submit_button_text.setTextColor(Color.RED);
-        }catch(Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             Toast.makeText(context, "Some error occured", Toast.LENGTH_SHORT).show();
         }
@@ -405,10 +555,13 @@ public class PollActivity extends AppCompatActivity implements RewardedVideoAdLi
                             String poll_status = getIntent().getStringExtra("poll_status");
                             if (poll_status.equalsIgnoreCase("OPEN")) {
                                 //OPEN
-                                submitButton.setVisibility(View.GONE);
+//                                submitButton.setVisibility(View.GONE);
                                 if (isPollUnlocked) {
                                     //question unlocked == true
-                                    popupCardView.setVisibility(View.GONE);
+
+                                    //hide layers
+                                    hideLayers();
+
                                     imgPollImage.setForeground(null);
                                     mFirestore.collection("USER")
                                             .document(userId)
@@ -450,6 +603,10 @@ public class PollActivity extends AppCompatActivity implements RewardedVideoAdLi
                                                                 opD.setBackground(getDrawable(R.drawable.green_round_background));
                                                                 break;
                                                         }
+                                                        submitButton.setEnabled(false);
+                                                        submitButton.setBackground(getDrawable(R.drawable.gray));
+                                                        submit_button_text.setText("Response submitted");
+                                                        submit_button_text.setTextColor(Color.RED);
                                                         progressBar.setVisibility(View.GONE);
                                                     } else {
                                                         // question not attempted
@@ -463,10 +620,10 @@ public class PollActivity extends AppCompatActivity implements RewardedVideoAdLi
                                                         opD.setEnabled(true);
                                                         ques.setForeground(null);
                                                         enableScrollView();
-//                                                        submitButton.setBackground(getDrawable(R.drawable.gray));
-//                                                        submitButton.setEnabled(false);
-//                                                        submit_button_text.setText("Win 4 coins on correct prediction");
-//                                                        submit_button_text.setTextColor(Color.RED);
+                                                        submitButton.setBackground(getDrawable(R.drawable.gray));
+                                                        submitButton.setEnabled(false);
+                                                        submit_button_text.setText("Win " + currentPoll.getREWARD_AMOUNT() + " coins on correct prediction");
+                                                        submit_button_text.setTextColor(Color.RED);
                                                         progressBar.setVisibility(View.GONE);
                                                     }
                                                 }
@@ -491,16 +648,18 @@ public class PollActivity extends AppCompatActivity implements RewardedVideoAdLi
                                     opD.setEnabled(false);
                                     ques.setForeground(getDrawable(disabled_foreground));
                                     disableScrollView();
-//                                    submitButton.setBackground(getDrawable(R.drawable.gray));
-//                                    submitButton.setEnabled(false);
-//                                    submit_button_text.setText("Close timer");
-//                                    submit_button_text.setTextColor(Color.RED);
-                                    popupCardView.setVisibility(View.VISIBLE);
-                                    progressBar.setVisibility(View.GONE);
+
+                                    //show layers
+                                    showLayers();
+
+//                                    progressBar.setVisibility(View.GONE);
                                 }
                             } else if (poll_status.equalsIgnoreCase("CLOSED")) {
                                 //CLOSED
-                                popupCardView.setVisibility(View.GONE);
+
+                                //hide layers
+                                hideLayers();
+
                                 opA.setForeground(getDrawable(disabled_foreground));
                                 opA.setEnabled(false);
                                 opB.setForeground(getDrawable(disabled_foreground));
@@ -576,7 +735,10 @@ public class PollActivity extends AppCompatActivity implements RewardedVideoAdLi
                                 submitButton.setEnabled(false);
                                 submitButton.setBackground(getDrawable(R.drawable.gray));
                                 submit_button_text.setTextColor(Color.RED);
-                                popupCardView.setVisibility(View.GONE);
+
+                                //hide layers
+                                hideLayers();
+
                                 if (isPollUnlocked) {
                                     // poll unlocked
                                     mFirestore.collection("USER")
@@ -633,7 +795,7 @@ public class PollActivity extends AppCompatActivity implements RewardedVideoAdLi
                                                                 getColor(R.color.colorAccent) : getColor(R.color.red);
                                                         submit_button_text.setTextColor(statusTextColor);
                                                         String status = (selected_option == correct_option) ?
-                                                                "Congrats!! You won "+reward_amount+" coins " + getEmojiByUnicode(0x1F603) :
+                                                                "Congrats!! You won " + reward_amount + " coins " + getEmojiByUnicode(0x1F603) :
                                                                 "Better luck next time " + getEmojiByUnicode(0x2639);
                                                         submit_button_text.setText(status);
                                                         progressBar.setVisibility(View.GONE);
@@ -644,8 +806,7 @@ public class PollActivity extends AppCompatActivity implements RewardedVideoAdLi
                                                         opC.setForeground(getDrawable(disabled_foreground));
                                                         opD.setForeground(getDrawable(disabled_foreground));
                                                         int correct_op = (int) currentPoll.getCORRECT_OPTION();
-                                                        switch(correct_op)
-                                                        {
+                                                        switch (correct_op) {
                                                             case 0:
                                                                 A.setVisibility(View.GONE);
                                                                 tickA.setVisibility(View.VISIBLE);
@@ -682,8 +843,7 @@ public class PollActivity extends AppCompatActivity implements RewardedVideoAdLi
                                     opC.setForeground(getDrawable(disabled_foreground));
                                     opD.setForeground(getDrawable(disabled_foreground));
                                     int correct_op = (int) currentPoll.getCORRECT_OPTION();
-                                    switch(correct_op)
-                                    {
+                                    switch (correct_op) {
                                         case 0:
                                             A.setVisibility(View.GONE);
                                             tickA.setVisibility(View.VISIBLE);
@@ -714,7 +874,7 @@ public class PollActivity extends AppCompatActivity implements RewardedVideoAdLi
                             errorOccured();
                         }
                     });
-        }catch(Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             Toast.makeText(context, "Some error occured", Toast.LENGTH_SHORT).show();
         }
@@ -738,7 +898,7 @@ public class PollActivity extends AppCompatActivity implements RewardedVideoAdLi
                             long poll_coins = (long) currentDocument.get("POLL_COINS");
                             long coins_redeemed = (long) currentDocument.get("COINS_REDEEMED");
                             availableCoins = poll_coins + share_coins - used_coins - coins_redeemed;
-                            nCoins.setText("X " + availableCoins);
+                            nCoins.setText("X  " + availableCoins);
                             mSharedPreference.edit().putInt("available_coins", (int) availableCoins).apply();
                             userId = currentDocument.getId();
                             checkPollStatus();
@@ -750,7 +910,7 @@ public class PollActivity extends AppCompatActivity implements RewardedVideoAdLi
                             errorOccured();
                         }
                     });
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             Toast.makeText(context, "Some error occured", Toast.LENGTH_SHORT).show();
         }
@@ -782,7 +942,7 @@ public class PollActivity extends AppCompatActivity implements RewardedVideoAdLi
     private void setupToolbar() {
         toolbar = findViewById(R.id.pollToolbar);
         nCoins = findViewById(R.id.txtCoins_poll);
-        nCoins.setText("X " + mSharedPreference.getInt("available_coins", 0));
+        nCoins.setText("X  " + mSharedPreference.getInt("available_coins", 0));
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -794,7 +954,7 @@ public class PollActivity extends AppCompatActivity implements RewardedVideoAdLi
     @Override
     protected void onResume() {
         super.onResume();
-        nCoins.setText("X " + mSharedPreference.getInt("available_coins", 10));
+        nCoins.setText("X  " + mSharedPreference.getInt("available_coins", 10));
     }
 
     public String getEmojiByUnicode(int unicode) {
@@ -803,9 +963,10 @@ public class PollActivity extends AppCompatActivity implements RewardedVideoAdLi
 
     @Override
     public void onRewardedVideoAdLoaded() {
-        if(adLimitsLeft > 0) {
+        if (adLimitsLeft > 0) {
             adButton.setEnabled(true);
             adButton.setForeground(null);
+            progressBar.setVisibility(View.GONE);
         }
     }
 
@@ -821,7 +982,7 @@ public class PollActivity extends AppCompatActivity implements RewardedVideoAdLi
 
     @Override
     public void onRewardedVideoAdClosed() {
-        mAd.loadAd("ca-app-pub-3940256099942544/5224354917",new AdRequest.Builder().build());
+        mAd.loadAd("ca-app-pub-3940256099942544/5224354917", new AdRequest.Builder().build());
     }
 
     @Override
@@ -829,8 +990,11 @@ public class PollActivity extends AppCompatActivity implements RewardedVideoAdLi
         adLimitsLeft--;
         mSharedPreference.edit().putInt("limit_remaining", adLimitsLeft).apply();
         mSharedPreference.edit().putBoolean(currentPoll.getPOLL_ID(), true).apply();
-        videoAdCreditDisplayer.setText(adLimitsLeft+" credits left for today");
-        popupCardView.setVisibility(View.GONE);
+        videoAdCreditDisplayer.setText(adLimitsLeft + " credits left for today");
+
+        //hide layers
+        hideLayers();
+
         enableScrollView();
         imgPollImage.setForeground(null);
         ques.setForeground(null);
@@ -844,9 +1008,10 @@ public class PollActivity extends AppCompatActivity implements RewardedVideoAdLi
         opD.setForeground(null);
         submitButton.setBackground(getDrawable(R.drawable.gray));
         submitButton.setForeground(null);
-        submit_button_text.setText("Win 4 coins on correct prediction");
+        submitButton.setEnabled(false);
+        submit_button_text.setText("Win " + currentPoll.getREWARD_AMOUNT() + " coins on correct prediction");
         submit_button_text.setTextColor(Color.RED);
-        Toast.makeText(this,"Poll unlocked",Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, "Poll unlocked", Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -857,6 +1022,7 @@ public class PollActivity extends AppCompatActivity implements RewardedVideoAdLi
     @Override
     public void onRewardedVideoAdFailedToLoad(int i) {
         Toast.makeText(this, "You are offline", Toast.LENGTH_SHORT).show();
+        progressBar.setVisibility(View.GONE);
     }
 
     @Override

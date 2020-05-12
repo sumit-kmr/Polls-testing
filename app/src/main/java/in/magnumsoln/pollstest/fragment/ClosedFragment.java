@@ -48,7 +48,7 @@ public class ClosedFragment extends Fragment implements FinishFetchingDataCallba
         activity = (CategoryActivity) getActivity();
         currentFragment = this;
         closedRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        closedRecyclerView.addItemDecoration(new DividerItemDecoration(closedRecyclerView.getContext(),DividerItemDecoration.VERTICAL));
+        //closedRecyclerView.addItemDecoration(new DividerItemDecoration(closedRecyclerView.getContext(),DividerItemDecoration.VERTICAL));
         new PollFetcher().fetchClosedPolls(this,activity.title);
         closed_refresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override

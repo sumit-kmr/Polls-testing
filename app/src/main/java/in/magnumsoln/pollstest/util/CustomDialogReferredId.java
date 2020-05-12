@@ -5,6 +5,7 @@ import android.app.Dialog;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.widget.Button;
@@ -105,12 +106,19 @@ public class CustomDialogReferredId extends Dialog implements android.view.View.
                         return;
                     }
                     final String enteredReferId = edtReferId.getText().toString();
-                    if ((enteredReferId.equalsIgnoreCase(registeredNumber)) ||
-                            enteredReferId.equalsIgnoreCase(paytmNumber)) {
-                        Toast.makeText(activity, "Invalid refer id", Toast.LENGTH_SHORT).show();
-                    } else {
+                    // check if entered refer id equals current register number
+                    if (enteredReferId.equalsIgnoreCase(registeredNumber)){
+                        Toast.makeText(activity, "You cannot refer yourself", Toast.LENGTH_SHORT).show();
+                    }
+                    // check if entered refer id equals current paytm number
+                    else if(enteredReferId.equalsIgnoreCase(paytmNumber)){
+                        Toast.makeText(activity, "This number is registered as your Paytm number", Toast.LENGTH_SHORT).show();
+                    }
+                    // continue to check other cases
+                    else {
                         progressBar.setVisibility(View.VISIBLE);
                         referIdContainer.setVisibility(View.GONE);
+                        // get details of the refer id entered by user
                         mFirestore.collection("USER").whereEqualTo("PHONE_NUMBER", enteredReferId).get()
                                 .addOnFailureListener(new OnFailureListener() {
                                     @Override
@@ -122,22 +130,29 @@ public class CustomDialogReferredId extends Dialog implements android.view.View.
                                 }).addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
                             @Override
                             public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                                // if number does not exist in database show error message
                                 if (queryDocumentSnapshots.isEmpty()) {
                                     Toast.makeText(activity, "Invalid refer id", Toast.LENGTH_SHORT).show();
                                     progressBar.setVisibility(View.GONE);
                                     referIdContainer.setVisibility(View.VISIBLE);
-                                } else {
+                                }
+                                // if number exists continue to check other cases
+                                else {
                                     DocumentSnapshot curr_doc = queryDocumentSnapshots.getDocuments().get(0);
-                                    String refer_id = (String) curr_doc.get("REFERRED_BY");
-                                    long share_coin = (long) curr_doc.get("SHARE_COINS");
+                                    String refer_id = (String) curr_doc.get("REFERRED_BY");  // get refer id of the refferer
+                                    long share_coin = (long) curr_doc.get("SHARE_COINS");    // get share coins of the refferer
                                     if (refer_id.equalsIgnoreCase(registeredNumber) ||
                                             refer_id.equalsIgnoreCase(paytmNumber)) {
-                                        Toast.makeText(activity, "Invalid refer id", Toast.LENGTH_SHORT).show();
+                                        if(refer_id.equalsIgnoreCase(registeredNumber)) {
+                                            Toast.makeText(activity, "You are the referrer of "+enteredReferId, Toast.LENGTH_SHORT).show();
+                                        }
+                                        else if(refer_id.equalsIgnoreCase(paytmNumber))
+                                            Toast.makeText(activity, "Invalid refer id", Toast.LENGTH_SHORT).show();
                                         progressBar.setVisibility(View.GONE);
                                         referIdContainer.setVisibility(View.VISIBLE);
                                         return;
-                                    } else if (share_coin > 100) {
-                                        Toast.makeText(activity, "Your friend has crossed max. refer limit", Toast.LENGTH_SHORT).show();
+                                    } else if (share_coin > 95) {
+                                        Toast.makeText(activity, "Referral max refer limit reached", Toast.LENGTH_SHORT).show();
                                         progressBar.setVisibility(View.GONE);
                                         referIdContainer.setVisibility(View.VISIBLE);
                                     } else {
@@ -193,9 +208,11 @@ public class CustomDialogReferredId extends Dialog implements android.view.View.
                                                                                     @Override
                                                                                     public void onSuccess(Void aVoid) {
                                                                                         referIdContainer.setVisibility(View.GONE);
-                                                                                        errorMessage.setText("Congratulations!! 5 coins added to wallet");
+//                                                                                        errorMessage.setText("Congratulations!! 5 coins added to wallet");
+                                                                                        dismiss();
+                                                                                        Toast.makeText(activity, "5 coins have been added to the wallet. Share and Earn more.", Toast.LENGTH_LONG).show();
                                                                                         progressBar.setVisibility(View.GONE);
-                                                                                        dialogErrorContainer.setVisibility(View.VISIBLE);
+//                                                                                        dialogErrorContainer.setVisibility(View.VISIBLE);
                                                                                         referredDialogCallback.referComplete(share_coin + 5, enteredReferId, available_coins + 5);
                                                                                     }
                                                                                 });

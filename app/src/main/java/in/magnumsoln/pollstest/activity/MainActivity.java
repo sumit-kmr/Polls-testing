@@ -78,6 +78,7 @@ public class MainActivity extends AppCompatActivity {
                 return true;
             }
         });
+        bottomNavigationView.setItemIconTintList(null);
     }
 
     @Override

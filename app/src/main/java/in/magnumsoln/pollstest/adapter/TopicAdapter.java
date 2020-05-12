@@ -12,6 +12,7 @@ import android.widget.Toast;
 
 import com.facebook.shimmer.ShimmerFrameLayout;
 import com.squareup.picasso.Callback;
+import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
@@ -42,7 +43,44 @@ public class TopicAdapter extends RecyclerView.Adapter<TopicAdapter.TopicViewHol
     @Override
     public void onBindViewHolder(@NonNull final TopicViewHolder holder, final int position) {
         try{
-            String imageUrl = topics.get(position).getIMAGE_URL();
+            final String imageUrl = topics.get(position).getIMAGE_URL();
+            //////
+
+            Picasso.with(context)
+                    .load(imageUrl)
+                    .resize(2048, 1600).onlyScaleDown()
+                    .networkPolicy(NetworkPolicy.OFFLINE)
+                    .error(R.drawable.sample)
+                    .placeholder(R.drawable.sample)
+                    .into(holder.imageView, new Callback() {
+                        @Override
+                        public void onSuccess() {
+                            holder.shimmer.setVisibility(View.GONE);
+                        }
+
+                        @Override
+                        public void onError() {
+                            //Try again online if cache failed
+                            Picasso.with(context)
+                                    .load(imageUrl)
+                                    .resize(2048, 1600).onlyScaleDown()
+                                    .error(R.drawable.sample)
+                                    .placeholder(R.drawable.sample)
+                                    .into(holder.imageView, new Callback() {
+                                        @Override
+                                        public void onSuccess() {
+                                            holder.shimmer.setVisibility(View.GONE);
+                                        }
+
+                                        @Override
+                                        public void onError() {
+                                            holder.shimmer.setVisibility(View.GONE);
+                                        }
+                                    });
+                        }
+                    });
+
+            /*
             Picasso.get().load(imageUrl).resize(2048, 1600).onlyScaleDown()
                     .error(R.drawable.sample).placeholder(R.drawable.sample)
                     .into(holder.imageView, new Callback() {
@@ -57,6 +95,8 @@ public class TopicAdapter extends RecyclerView.Adapter<TopicAdapter.TopicViewHol
                             holder.shimmer.setVisibility(View.GONE);
                         }
                     });
+             */
+            //////
             holder.imageView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {

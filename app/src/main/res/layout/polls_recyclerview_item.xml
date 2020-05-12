@@ -2,22 +2,20 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="120dp"
+    android:layout_height="wrap_content"
     android:clickable="true"
     android:focusable="true"
     android:background="@drawable/recycler_item_ripple_effect"
-    android:id="@+id/polls_recycler_item">
+    android:id="@+id/polls_recycler_item"
+    android:gravity="center">
 
     <androidx.cardview.widget.CardView
-        android:layout_width="150dp"
-        android:layout_height="90dp"
-        app:cardCornerRadius="10dp"
-        android:layout_marginLeft="16dp"
-        android:layout_marginTop="10dp"
-        android:id="@+id/imageCardView"
-        app:cardElevation="0dp"
-        android:outlineAmbientShadowColor="@android:color/transparent"
-        android:layout_centerVertical="true">
+        android:layout_width="match_parent"
+        android:layout_height="212dp"
+        android:id="@+id/imageCardView">
+       <!-- android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp" -->
+
 
         <ImageView
             android:id="@+id/imgPollThumbnail"
@@ -25,7 +23,7 @@
             android:layout_height="match_parent"
             android:layout_alignParentStart="true"
             android:scaleType="fitXY"
-            android:src="@drawable/sample" />
+            android:src="@drawable/sample"/>
 
         <com.facebook.shimmer.ShimmerFrameLayout
             android:layout_width="match_parent"
@@ -42,14 +40,18 @@
         android:id="@+id/txtQuestion"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="16dp"
-        android:layout_marginTop="30dp"
-        android:layout_toRightOf="@id/imageCardView"
+        android:layout_below="@id/imageCardView"
         android:fontFamily="@font/comfortaa_regular"
-        android:padding="5dp"
+        android:layout_marginTop="2dp"
+        android:layout_marginBottom="2dp"
+        android:padding="6dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginEnd="10dp"
         android:text="@string/this_is_a_question"
         android:layout_centerVertical="true"
         android:textColor="#000"
-        android:textSize="15sp" />
+        android:textSize="15sp"
+        android:maxLines="2"
+        android:ellipsize="end"/>
 
 </RelativeLayout>
