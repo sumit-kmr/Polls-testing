@@ -150,7 +150,7 @@ public class ProfileFragment extends Fragment
                                                                             .putInt("available_coins", (int) available_coin - 100)
                                                                             .apply();
                                                                     amountEarned.setText("Rs. " + (coin_redeemed + 100));
-                                                                    nCoins.setText("X  " + (available_coin - 100));
+                                                                    nCoins.setText("X " + (available_coin - 100));
                                                                     btnReedem.setText("Redeem 100");
                                                                     btnReedem.setEnabled(false);
                                                                     btnReedem.setForeground(context
@@ -258,7 +258,7 @@ public class ProfileFragment extends Fragment
                             txtPaytmNo.setText(paytm_no);
                             amountEarned.setText("Rs. " + coin_redeemed);
                             mSharedPreference.edit().putInt("available_coins", available_coins).apply();
-                            nCoins.setText("X  " + available_coins);
+                            nCoins.setText("X " + available_coins);
                             userId = curr.getId();
                             editButtonListener();
                             referIdListener();
@@ -298,7 +298,7 @@ public class ProfileFragment extends Fragment
                             txtPaytmNo.setText(paytm_no);
                             amountEarned.setText("Rs. " + coin_redeemed);
                             mSharedPreference.edit().putInt("available_coins", available_coins).apply();
-                            nCoins.setText("X  " + available_coins);
+                            nCoins.setText("X " + available_coins);
                             userId = curr.getId();
                             swipeRefreshLayout.setRefreshing(false);
                             if (available_coins >= 100 && !money_req) {
@@ -360,7 +360,7 @@ public class ProfileFragment extends Fragment
     public void referComplete(long shareCoins, String referredBy, int availableCoins) {
         referred_by = referredBy;
         mSharedPreference.edit().putInt("available_coins", availableCoins).apply();
-        nCoins.setText("X  " + availableCoins);
+        nCoins.setText("X " + availableCoins);
         refresh();
     }
 }

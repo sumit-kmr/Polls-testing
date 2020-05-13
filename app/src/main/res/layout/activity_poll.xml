@@ -28,7 +28,7 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentEnd="true"
                 android:layout_centerVertical="true"
-                android:layout_marginEnd="5dp"
+                android:layout_marginEnd="16dp"
                 android:fontFamily="@font/comfortaa_bold"
                 android:text="X 100"
                 android:textColor="@color/colorPrimaryDark"
@@ -89,7 +89,8 @@
                         android:layout_gravity="center"
                         android:layout_marginTop="20dp"
                         android:fontFamily="@font/comfortaa_semibold"
-                        android:maxLines="3"
+                        android:maxLines="6"
+                        android:ellipsize="end"
                         android:text="This is a sample question"
                         android:textAlignment="center"
                         android:textColor="#000"
@@ -282,8 +283,107 @@
                             android:textColor="#000"
                             android:textSize="18sp" />
                     </LinearLayout>
-                </LinearLayout>
 
+                    <LinearLayout
+                        android:id="@+id/option_e_container"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="10dp"
+                        android:layout_marginTop="20dp"
+                        android:layout_marginEnd="10dp"
+                        android:layout_marginBottom="10dp"
+                        android:background="@drawable/option_button"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:orientation="horizontal"
+                        android:padding="8dp"
+                        android:weightSum="5">
+
+                        <TextView
+                            android:id="@+id/E"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_vertical"
+                            android:fontFamily="@font/comfortaa_bold"
+                            android:paddingStart="3dp"
+                            android:text="@string/e"
+                            android:textColor="#000"
+                            android:textSize="18sp" />
+
+                        <ImageView
+                            android:id="@+id/ticke"
+                            android:layout_width="20dp"
+                            android:layout_height="22dp"
+                            android:layout_gravity="center_vertical"
+                            android:src="@drawable/tick"
+                            android:visibility="gone" />
+
+                        <TextView
+                            android:id="@+id/e"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_vertical"
+                            android:fontFamily="@font/comfortaa_semibold"
+                            android:maxLines="2"
+                            android:paddingStart="10dp"
+                            android:paddingEnd="3dp"
+                            android:text="Option-5. Option can have maximum of two lines"
+                            android:textColor="#000"
+                            android:textSize="18sp" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/option_f_container"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="10dp"
+                        android:layout_marginTop="20dp"
+                        android:layout_marginEnd="10dp"
+                        android:layout_marginBottom="10dp"
+                        android:background="@drawable/option_button"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:orientation="horizontal"
+                        android:padding="8dp"
+                        android:weightSum="5">
+
+                        <TextView
+                            android:id="@+id/F"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_vertical"
+                            android:fontFamily="@font/comfortaa_bold"
+                            android:paddingStart="3dp"
+                            android:text="@string/f"
+                            android:textColor="#000"
+                            android:textSize="18sp" />
+
+                        <ImageView
+                            android:id="@+id/tickf"
+                            android:layout_width="20dp"
+                            android:layout_height="22dp"
+                            android:layout_gravity="center_vertical"
+                            android:src="@drawable/tick"
+                            android:visibility="gone" />
+
+                        <TextView
+                            android:id="@+id/f"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_vertical"
+                            android:fontFamily="@font/comfortaa_semibold"
+                            android:maxLines="2"
+                            android:paddingStart="10dp"
+                            android:paddingEnd="3dp"
+                            android:text="Option-6. Option can have maximum of two lines"
+                            android:textColor="#000"
+                            android:textSize="18sp" />
+                    </LinearLayout>
+                    <!--End-->
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="20dp"/>
+                </LinearLayout>
             </ScrollView>
 
             <RelativeLayout

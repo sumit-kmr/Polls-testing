@@ -10,9 +10,12 @@
         android:layout_height="wrap_content"
         android:textAlignment="center"
         android:text="Your Requested Is Submitted. You will receive the amount within 7 working days."
-        android:fontFamily="@font/comfortaa_bold"
-        android:textColor="@color/colorAccent"
-        android:layout_gravity="center" />
+        android:fontFamily="@font/comfortaa_regular"
+        android:textColor="#000"
+        android:textSize="18sp"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginTop="40dp"/>
     <Button
         android:layout_width="wrap_content"
         android:layout_height="35dp"

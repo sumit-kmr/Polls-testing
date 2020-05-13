@@ -49,8 +49,6 @@ public class LatestPollsAdapter extends RecyclerView.Adapter<LatestPollsAdapter.
                     .load(imageUrl)
                     .resize(2048, 1600).onlyScaleDown()
                     .networkPolicy(NetworkPolicy.OFFLINE)
-                    .error(R.drawable.sample)
-                    .placeholder(R.drawable.sample)
                     .into(holder.imageView, new Callback() {
                         @Override
                         public void onSuccess() {
@@ -63,8 +61,6 @@ public class LatestPollsAdapter extends RecyclerView.Adapter<LatestPollsAdapter.
                             Picasso.with(context)
                                     .load(imageUrl)
                                     .resize(2048, 1600).onlyScaleDown()
-                                    .error(R.drawable.sample)
-                                    .placeholder(R.drawable.sample)
                                     .into(holder.imageView, new Callback() {
                                         @Override
                                         public void onSuccess() {
