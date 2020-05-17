@@ -166,12 +166,6 @@ public class MainActivity extends AppCompatActivity {
                                     intent.putExtra("category_name", topic);
                                     startActivity(intent);
                                 }
-                                // Handle the deep link. For example, open the linked
-                                // content, or apply promotional credit to the user's
-                                // account.
-                                // ...
-
-                                // ...
                             }
                         }
                     })

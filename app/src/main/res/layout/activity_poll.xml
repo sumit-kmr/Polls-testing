@@ -51,36 +51,49 @@
 
         <!--        lowest layer-->
         <RelativeLayout
+            android:id="@+id/bottomLayer"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:id="@+id/bottomLayer">
+            android:layout_height="match_parent">
 
             <ScrollView
                 android:id="@+id/scrollView"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_above="@id/submitButton">
+                android:layout_above="@id/submitButtonContainer">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical">
 
-                    <androidx.cardview.widget.CardView
+                    <androidx.constraintlayout.widget.ConstraintLayout
                         android:layout_width="match_parent"
-                        android:layout_height="200dp"
+                        android:layout_height="wrap_content"
                         android:layout_marginStart="16dp"
                         android:layout_marginTop="5dp"
                         android:layout_marginEnd="16dp"
-                        app:cardCornerRadius="10dp">
+                        android:background="@drawable/card_shadow"
+                        android:elevation="10dp">
 
-                        <ImageView
-                            android:id="@+id/imgPollImage"
+                        <androidx.cardview.widget.CardView
                             android:layout_width="match_parent"
-                            android:layout_height="200dp"
-                            android:scaleType="fitXY"
-                            android:src="@drawable/sample" />
-                    </androidx.cardview.widget.CardView>
+                            android:layout_height="0dp"
+                            app:cardCornerRadius="20dp"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintDimensionRatio="16:9"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent">
+
+                            <ImageView
+                                android:id="@+id/imgPollImage"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:scaleType="fitXY"
+                                android:src="@drawable/sample" />
+                        </androidx.cardview.widget.CardView>
+
+                    </androidx.constraintlayout.widget.ConstraintLayout>
 
                     <TextView
                         android:id="@+id/txtQuestion"
@@ -88,9 +101,9 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
                         android:layout_marginTop="20dp"
+                        android:ellipsize="end"
                         android:fontFamily="@font/comfortaa_semibold"
                         android:maxLines="6"
-                        android:ellipsize="end"
                         android:text="This is a sample question"
                         android:textAlignment="center"
                         android:textColor="#000"
@@ -103,7 +116,7 @@
                         android:layout_marginStart="10dp"
                         android:layout_marginTop="10dp"
                         android:layout_marginEnd="10dp"
-                        android:background="@drawable/option_button"
+                        android:background="@drawable/option_button_unselected"
                         android:clickable="true"
                         android:focusable="true"
                         android:orientation="horizontal"
@@ -116,17 +129,21 @@
                             android:layout_gravity="center_vertical"
                             android:fontFamily="@font/comfortaa_bold"
                             android:paddingStart="3dp"
+                            android:paddingTop="5dp"
+                            android:paddingBottom="8dp"
                             android:text="A."
                             android:textColor="#000"
                             android:textSize="18sp" />
 
-                        <ImageView
+                        <com.airbnb.lottie.LottieAnimationView
                             android:id="@+id/ticka"
-                            android:layout_width="20dp"
-                            android:layout_height="22dp"
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
                             android:layout_gravity="center_vertical"
-                            android:src="@drawable/tick"
-                            android:visibility="gone" />
+                            android:visibility="gone"
+                            app:lottie_autoPlay="true"
+                            app:lottie_loop="true"
+                            app:lottie_rawRes="@raw/tick_gif" />
 
                         <TextView
                             android:id="@+id/a"
@@ -136,7 +153,9 @@
                             android:fontFamily="@font/comfortaa_semibold"
                             android:maxLines="2"
                             android:paddingStart="8dp"
+                            android:paddingTop="5dp"
                             android:paddingEnd="3dp"
+                            android:paddingBottom="8dp"
                             android:text="Option-1. Option can have maximum of two lines"
                             android:textColor="#000"
                             android:textSize="18sp" />
@@ -149,7 +168,7 @@
                         android:layout_marginStart="10dp"
                         android:layout_marginTop="20dp"
                         android:layout_marginEnd="10dp"
-                        android:background="@drawable/option_button"
+                        android:background="@drawable/option_button_unselected"
                         android:clickable="true"
                         android:focusable="true"
                         android:orientation="horizontal"
@@ -163,17 +182,21 @@
                             android:layout_gravity="center_vertical"
                             android:fontFamily="@font/comfortaa_bold"
                             android:paddingStart="3dp"
+                            android:paddingTop="5dp"
+                            android:paddingBottom="8dp"
                             android:text="@string/b"
                             android:textColor="#000"
                             android:textSize="18sp" />
 
-                        <ImageView
+                        <com.airbnb.lottie.LottieAnimationView
                             android:id="@+id/tickb"
-                            android:layout_width="20dp"
-                            android:layout_height="22dp"
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
                             android:layout_gravity="center_vertical"
-                            android:src="@drawable/tick"
-                            android:visibility="gone" />
+                            android:visibility="gone"
+                            app:lottie_autoPlay="true"
+                            app:lottie_loop="true"
+                            app:lottie_rawRes="@raw/tick_gif" />
 
                         <TextView
                             android:id="@+id/b"
@@ -183,7 +206,9 @@
                             android:fontFamily="@font/comfortaa_semibold"
                             android:maxLines="2"
                             android:paddingStart="10dp"
+                            android:paddingTop="5dp"
                             android:paddingEnd="3dp"
+                            android:paddingBottom="8dp"
                             android:text="Option-2. Option can have maximum of two lines"
                             android:textColor="#000"
                             android:textSize="18sp" />
@@ -196,7 +221,7 @@
                         android:layout_marginStart="10dp"
                         android:layout_marginTop="20dp"
                         android:layout_marginEnd="10dp"
-                        android:background="@drawable/option_button"
+                        android:background="@drawable/option_button_unselected"
                         android:clickable="true"
                         android:focusable="true"
                         android:orientation="horizontal"
@@ -210,17 +235,21 @@
                             android:layout_gravity="center_vertical"
                             android:fontFamily="@font/comfortaa_bold"
                             android:paddingStart="3dp"
+                            android:paddingTop="5dp"
+                            android:paddingBottom="8dp"
                             android:text="@string/c"
                             android:textColor="#000"
                             android:textSize="18sp" />
 
-                        <ImageView
+                        <com.airbnb.lottie.LottieAnimationView
                             android:id="@+id/tickc"
-                            android:layout_width="20dp"
-                            android:layout_height="22dp"
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
                             android:layout_gravity="center_vertical"
-                            android:src="@drawable/tick"
-                            android:visibility="gone" />
+                            android:visibility="gone"
+                            app:lottie_autoPlay="true"
+                            app:lottie_loop="true"
+                            app:lottie_rawRes="@raw/tick_gif" />
 
                         <TextView
                             android:id="@+id/c"
@@ -230,7 +259,9 @@
                             android:fontFamily="@font/comfortaa_semibold"
                             android:maxLines="2"
                             android:paddingStart="10dp"
+                            android:paddingTop="5dp"
                             android:paddingEnd="3dp"
+                            android:paddingBottom="8dp"
                             android:text="Option-3. Option can have maximum of two lines"
                             android:textColor="#000"
                             android:textSize="18sp" />
@@ -244,7 +275,7 @@
                         android:layout_marginTop="20dp"
                         android:layout_marginEnd="10dp"
                         android:layout_marginBottom="10dp"
-                        android:background="@drawable/option_button"
+                        android:background="@drawable/option_button_unselected"
                         android:clickable="true"
                         android:focusable="true"
                         android:orientation="horizontal"
@@ -258,17 +289,21 @@
                             android:layout_gravity="center_vertical"
                             android:fontFamily="@font/comfortaa_bold"
                             android:paddingStart="3dp"
+                            android:paddingTop="5dp"
+                            android:paddingBottom="8dp"
                             android:text="@string/d"
                             android:textColor="#000"
                             android:textSize="18sp" />
 
-                        <ImageView
+                        <com.airbnb.lottie.LottieAnimationView
                             android:id="@+id/tickd"
-                            android:layout_width="20dp"
-                            android:layout_height="22dp"
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
                             android:layout_gravity="center_vertical"
-                            android:src="@drawable/tick"
-                            android:visibility="gone" />
+                            android:visibility="gone"
+                            app:lottie_autoPlay="true"
+                            app:lottie_loop="true"
+                            app:lottie_rawRes="@raw/tick_gif" />
 
                         <TextView
                             android:id="@+id/d"
@@ -278,7 +313,9 @@
                             android:fontFamily="@font/comfortaa_semibold"
                             android:maxLines="2"
                             android:paddingStart="10dp"
+                            android:paddingTop="5dp"
                             android:paddingEnd="3dp"
+                            android:paddingBottom="8dp"
                             android:text="Option-4. Option can have maximum of two lines"
                             android:textColor="#000"
                             android:textSize="18sp" />
@@ -292,7 +329,7 @@
                         android:layout_marginTop="20dp"
                         android:layout_marginEnd="10dp"
                         android:layout_marginBottom="10dp"
-                        android:background="@drawable/option_button"
+                        android:background="@drawable/option_button_unselected"
                         android:clickable="true"
                         android:focusable="true"
                         android:orientation="horizontal"
@@ -306,17 +343,21 @@
                             android:layout_gravity="center_vertical"
                             android:fontFamily="@font/comfortaa_bold"
                             android:paddingStart="3dp"
+                            android:paddingTop="5dp"
+                            android:paddingBottom="8dp"
                             android:text="@string/e"
                             android:textColor="#000"
                             android:textSize="18sp" />
 
-                        <ImageView
+                        <com.airbnb.lottie.LottieAnimationView
                             android:id="@+id/ticke"
-                            android:layout_width="20dp"
-                            android:layout_height="22dp"
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
                             android:layout_gravity="center_vertical"
-                            android:src="@drawable/tick"
-                            android:visibility="gone" />
+                            android:visibility="gone"
+                            app:lottie_autoPlay="true"
+                            app:lottie_loop="true"
+                            app:lottie_rawRes="@raw/tick_gif" />
 
                         <TextView
                             android:id="@+id/e"
@@ -326,7 +367,9 @@
                             android:fontFamily="@font/comfortaa_semibold"
                             android:maxLines="2"
                             android:paddingStart="10dp"
+                            android:paddingTop="5dp"
                             android:paddingEnd="3dp"
+                            android:paddingBottom="8dp"
                             android:text="Option-5. Option can have maximum of two lines"
                             android:textColor="#000"
                             android:textSize="18sp" />
@@ -340,7 +383,7 @@
                         android:layout_marginTop="20dp"
                         android:layout_marginEnd="10dp"
                         android:layout_marginBottom="10dp"
-                        android:background="@drawable/option_button"
+                        android:background="@drawable/option_button_unselected"
                         android:clickable="true"
                         android:focusable="true"
                         android:orientation="horizontal"
@@ -354,17 +397,21 @@
                             android:layout_gravity="center_vertical"
                             android:fontFamily="@font/comfortaa_bold"
                             android:paddingStart="3dp"
+                            android:paddingTop="5dp"
+                            android:paddingBottom="8dp"
                             android:text="@string/f"
                             android:textColor="#000"
                             android:textSize="18sp" />
 
-                        <ImageView
+                        <com.airbnb.lottie.LottieAnimationView
                             android:id="@+id/tickf"
-                            android:layout_width="20dp"
-                            android:layout_height="22dp"
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
                             android:layout_gravity="center_vertical"
-                            android:src="@drawable/tick"
-                            android:visibility="gone" />
+                            android:visibility="gone"
+                            app:lottie_autoPlay="true"
+                            app:lottie_loop="true"
+                            app:lottie_rawRes="@raw/tick_gif" />
 
                         <TextView
                             android:id="@+id/f"
@@ -374,7 +421,9 @@
                             android:fontFamily="@font/comfortaa_semibold"
                             android:maxLines="2"
                             android:paddingStart="10dp"
+                            android:paddingTop="5dp"
                             android:paddingEnd="3dp"
+                            android:paddingBottom="8dp"
                             android:text="Option-6. Option can have maximum of two lines"
                             android:textColor="#000"
                             android:textSize="18sp" />
@@ -382,194 +431,246 @@
                     <!--End-->
                     <View
                         android:layout_width="match_parent"
-                        android:layout_height="20dp"/>
+                        android:layout_height="20dp" />
                 </LinearLayout>
             </ScrollView>
 
-            <RelativeLayout
-                android:id="@+id/submitButton"
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="50dp"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
                 android:layout_alignParentBottom="true"
-                android:background="@drawable/white_ripple_on_green_background"
-                android:clickable="true"
-                android:focusable="true">
+                android:id="@+id/submitButtonContainer">
 
-                <TextView
-                    android:id="@+id/txtsubmit"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_centerInParent="true"
-                    android:fontFamily="@font/comfortaa_bold"
-                    android:text="STATUS"
-                    android:textColor="#000"
-                    android:textSize="18sp" />
-            </RelativeLayout>
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="5dp"
+                    android:background="@drawable/status_shadow" />
+
+                <RelativeLayout
+                    android:id="@+id/submitButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:background="@drawable/white_ripple_on_green_background"
+                    android:clickable="true"
+                    android:focusable="true">
+
+                    <TextView
+                        android:id="@+id/txtsubmit"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerInParent="true"
+                        android:fontFamily="@font/comfortaa_bold"
+                        android:text="STATUS"
+                        android:textColor="#000"
+                        android:textSize="18sp" />
+                </RelativeLayout>
+            </LinearLayout>
+
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:layout_marginBottom="8dp"
+                android:layout_alignParentEnd="true"
+                app:backgroundTint="@android:color/black"
+                android:src="@drawable/ic_share"
+                android:id="@+id/actionButtonPoll"
+                app:rippleColor="@android:color/white"
+                android:clickable="true"
+                android:focusable="true"
+                android:layout_above="@id/submitButtonContainer"/>
 
         </RelativeLayout>
 
-<!--        middle layer-->
+        <!--        middle layer-->
         <RelativeLayout
+            android:id="@+id/middleLayer"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:id="@+id/middleLayer">
+            android:layout_height="match_parent">
+
             <ImageView
+                android:id="@+id/imgMiddleLayer"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:id="@+id/imgMiddleLayer"
-                android:foreground="#a000"/>
+                android:foreground="#9000" />
         </RelativeLayout>
 
-<!--        top layer-->
+        <!--        top layer-->
         <RelativeLayout
+            android:id="@+id/topLayer"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:clickable="true"
-            android:focusable="true"
-            android:id="@+id/topLayer">
-            <androidx.cardview.widget.CardView
+            android:focusable="true">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
-                android:layout_height="200dp"
+                android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="5dp"
                 android:layout_marginEnd="16dp"
-                app:cardCornerRadius="10dp"
-                android:id="@+id/cardTopLayer">
+                android:background="@drawable/card_shadow"
+                android:elevation="10dp">
 
-                <ImageView
-                    android:id="@+id/imgTopLayer"
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/cardTopLayer"
                     android:layout_width="match_parent"
-                    android:layout_height="200dp"
-                    android:scaleType="fitXY"
-                    android:src="@drawable/sample" />
-            </androidx.cardview.widget.CardView>
+                    android:layout_height="0dp"
+                    app:cardCornerRadius="20dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintDimensionRatio="16:9"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent">
 
-          <!-- video ad button-->
+                    <ImageView
+                        android:id="@+id/imgTopLayer"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:scaleType="fitXY"
+                        android:src="@drawable/sample" />
+                </androidx.cardview.widget.CardView>
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <!-- video ad button-->
             <RelativeLayout
+                android:id="@+id/adButton"
                 android:layout_width="220dp"
                 android:layout_height="80dp"
-                android:background="@drawable/green_round_background"
                 android:layout_above="@id/coinButton"
                 android:layout_centerHorizontal="true"
                 android:layout_marginBottom="16dp"
-                android:id="@+id/adButton"
-                android:gravity="center"
+                android:background="@drawable/option_button_selected"
                 android:clickable="true"
-                android:focusable="true">
+                android:focusable="true"
+                android:gravity="center">
+
                 <RelativeLayout
+                    android:id="@+id/rel"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_centerHorizontal="true"
-                    android:id="@+id/rel">
+                    android:layout_centerHorizontal="true">
+
                     <ImageView
+                        android:id="@+id/imgClapperboard"
                         android:layout_width="20dp"
                         android:layout_height="20dp"
-                        android:src="@drawable/clapperboard"
-                        android:id="@+id/imgClapperboard"/>
+                        android:src="@drawable/clapperboard" />
+
                     <TextView
+                        android:id="@+id/txtAdPrompt"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:id="@+id/txtAdPrompt"
-                        android:text="Video Ad"
                         android:layout_toRightOf="@id/imgClapperboard"
                         android:fontFamily="@font/comfortaa_semibold"
-                        android:textSize="15sp"
-                        android:paddingStart="10dp"/>
+                        android:paddingStart="10dp"
+                        android:text="Video Ad"
+                        android:textSize="15sp" />
                 </RelativeLayout>
+
                 <TextView
+                    android:id="@+id/video_ad_credits_left"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_below="@id/rel"
-                    android:text="10 credits left today"
-                    android:textSize="15sp"
-                    android:layout_marginTop="8dp"
                     android:layout_centerHorizontal="true"
-                    android:id="@+id/video_ad_credits_left"/>
+                    android:layout_marginTop="8dp"
+                    android:text="10 credits left today"
+                    android:textSize="15sp" />
             </RelativeLayout>
 
             <!-- coin button-->
             <RelativeLayout
+                android:id="@+id/coinButton"
                 android:layout_width="220dp"
                 android:layout_height="80dp"
-                android:background="@drawable/green_round_background"
                 android:layout_above="@id/unlockThisPoll"
-                android:layout_marginBottom="16dp"
                 android:layout_centerHorizontal="true"
-                android:id="@+id/coinButton"
-                android:gravity="center"
+                android:layout_marginBottom="16dp"
+                android:background="@drawable/option_button_selected"
                 android:clickable="true"
-                android:focusable="true">
+                android:focusable="true"
+                android:gravity="center">
+
                 <RelativeLayout
+                    android:id="@+id/rel2"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_centerHorizontal="true"
-                    android:id="@+id/rel2">
+                    android:layout_centerHorizontal="true">
+
                     <ImageView
+                        android:id="@+id/imgCoin"
                         android:layout_width="20dp"
                         android:layout_height="20dp"
-                        android:src="@drawable/coin"
-                        android:id="@+id/imgCoin"/>
+                        android:src="@drawable/coin" />
+
                     <TextView
+                        android:id="@+id/txtNoOfCoins"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:id="@+id/txtNoOfCoins"
-                        android:text="  X  1"
                         android:layout_toRightOf="@id/imgCoin"
                         android:fontFamily="@font/comfortaa_semibold"
-                        android:textSize="15sp"
-                        android:paddingStart="10dp"/>
+                        android:paddingStart="10dp"
+                        android:text="  X  1"
+                        android:textSize="15sp" />
                 </RelativeLayout>
+
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_below="@id/rel2"
-                    android:text="Use 1 coin"
-                    android:textSize="15dp"
+                    android:layout_centerHorizontal="true"
                     android:layout_marginTop="8dp"
-                    android:layout_centerHorizontal="true"/>
+                    android:text="Use 1 coin"
+                    android:textSize="15dp" />
             </RelativeLayout>
 
             <!-- when ad not enabled -->
             <RelativeLayout
+                android:id="@+id/coinButton2"
                 android:layout_width="220dp"
                 android:layout_height="80dp"
-                android:background="@drawable/green_round_background"
                 android:layout_above="@id/unlockThisPoll"
-                android:layout_marginBottom="40dp"
                 android:layout_centerHorizontal="true"
-                android:id="@+id/coinButton2"
-                android:gravity="center"
+                android:layout_marginBottom="40dp"
+                android:background="@drawable/option_button_selected"
                 android:clickable="true"
                 android:focusable="true"
+                android:gravity="center"
                 android:visibility="gone">
+
                 <RelativeLayout
+                    android:id="@+id/rel22"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_centerHorizontal="true"
-                    android:id="@+id/rel22">
+                    android:layout_centerHorizontal="true">
+
                     <ImageView
+                        android:id="@+id/imgCoin2"
                         android:layout_width="20dp"
                         android:layout_height="20dp"
-                        android:src="@drawable/coin"
-                        android:id="@+id/imgCoin2"/>
+                        android:src="@drawable/coin" />
+
                     <TextView
+                        android:id="@+id/txtNoOfCoins2"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:id="@+id/txtNoOfCoins2"
-                        android:text="  X  1"
                         android:layout_toEndOf="@id/imgCoin2"
                         android:fontFamily="@font/comfortaa_semibold"
-                        android:textSize="15sp"
-                        android:paddingStart="10dp"/>
+                        android:paddingStart="10dp"
+                        android:text="  X  1"
+                        android:textSize="15sp" />
                 </RelativeLayout>
+
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_below="@id/rel22"
-                    android:text="Use 1 coin"
-                    android:textSize="15dp"
+                    android:layout_centerHorizontal="true"
                     android:layout_marginTop="8dp"
-                    android:layout_centerHorizontal="true"/>
+                    android:text="Use 1 coin"
+                    android:textSize="15dp" />
             </RelativeLayout>
 
 

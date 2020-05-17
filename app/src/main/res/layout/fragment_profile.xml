@@ -113,17 +113,17 @@
 
                     <Button
                         android:id="@+id/btnReedem"
-                        android:layout_width="110dp"
-                        android:layout_height="40dp"
-                        android:layout_alignParentRight="true"
+                        android:layout_width="107dp"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentEnd="true"
                         android:layout_centerVertical="true"
                         android:background="@drawable/ok_button_background"
                         android:enabled="false"
-                        android:fontFamily="@font/comfortaa_bold"
+                        android:fontFamily="@font/comfortaa_regular"
                         android:foreground="#7fff"
-                        android:padding="5dp"
                         android:text="Reedem 100"
-                        android:textAllCaps="false" />
+                        android:textAllCaps="false"
+                        android:gravity="center"/>
                 </RelativeLayout>
 
                 <RelativeLayout
@@ -176,13 +176,13 @@
                     <Button
                         android:id="@+id/btnRefer"
                         android:layout_width="148dp"
-                        android:layout_height="45dp"
+                        android:layout_height="wrap_content"
                         android:layout_centerInParent="true"
                         android:background="@drawable/ok_button_background"
-                        android:fontFamily="@font/comfortaa_bold"
-                        android:padding="5dp"
+                        android:fontFamily="@font/comfortaa_regular"
                         android:text="Enter refer Id"
-                        android:textAllCaps="false" />
+                        android:textAllCaps="false"
+                        android:gravity="center"/>
                 </RelativeLayout>
 
                 <RelativeLayout
@@ -194,26 +194,26 @@
                     <Button
                         android:id="@+id/btnShare"
                         android:layout_width="148dp"
-                        android:layout_height="45dp"
+                        android:layout_height="wrap_content"
                         android:layout_alignParentStart="true"
                         android:layout_marginStart="10dp"
                         android:background="@drawable/ok_button_background"
-                        android:fontFamily="@font/comfortaa_bold"
-                        android:padding="5dp"
+                        android:fontFamily="@font/comfortaa_regular"
                         android:text="Share app"
-                        android:textAllCaps="false" />
+                        android:textAllCaps="false"
+                        android:gravity="center" />
 
                     <Button
                         android:id="@+id/btnRate"
                         android:layout_width="148dp"
-                        android:layout_height="45dp"
+                        android:layout_height="wrap_content"
                         android:layout_alignParentEnd="true"
                         android:layout_marginEnd="10dp"
                         android:background="@drawable/ok_button_background"
-                        android:fontFamily="@font/comfortaa_bold"
-                        android:padding="5dp"
+                        android:fontFamily="@font/comfortaa_regular"
                         android:text="Rate us"
-                        android:textAllCaps="false" />
+                        android:textAllCaps="false"
+                        android:gravity="center"/>
                 </RelativeLayout>
 
                 <View

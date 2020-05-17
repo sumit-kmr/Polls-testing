@@ -46,16 +46,16 @@
             android:layout_width="0dp"
             android:layout_height="40dp"
             android:layout_marginStart="8dp"
-            android:layout_weight="1.6"
+            android:layout_weight="1.8"
             android:background="@drawable/ok_button_background"
-            android:text="@string/ok" />
+            android:text="@string/ok"/>
 
         <ProgressBar
             android:id="@+id/progress_bar_mobile"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
-            android:layout_weight="1.6"
+            android:layout_weight="1.8"
             android:visibility="gone" />
     </LinearLayout>
 
@@ -69,6 +69,18 @@
         android:orientation="horizontal"
         android:padding="5dp"
         android:weightSum="10">
+
+        <TextView
+            android:id="@+id/txtTimer"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/comfortaa_regular"
+            android:layout_weight="0.8"
+            android:text="00:59"
+            android:textColor="@color/red"
+            android:layout_gravity="center_vertical"
+            android:textSize="18sp"
+            android:visibility="gone" />
 
         <ImageView
             android:id="@+id/btnResendOtp"
@@ -102,7 +114,7 @@
             android:layout_width="0dp"
             android:layout_height="40dp"
             android:layout_marginStart="8dp"
-            android:layout_weight="1.6"
+            android:layout_weight="1.8"
             android:background="@drawable/ok_button_background"
             android:text="@string/ok" />
 
@@ -111,32 +123,18 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
-            android:layout_weight="1.6"
+            android:layout_weight="1.8"
             android:visibility="gone" />
     </LinearLayout>
 
-
-    <TextView
-        android:id="@+id/txtTimer"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/OtpContainer"
-        android:layout_centerHorizontal="true"
-        android:layout_marginLeft="20dp"
-        android:layout_marginTop="15dp"
-        android:fontFamily="@font/comfortaa_regular"
-        android:text="00:59"
-        android:textColor="@color/red"
-        android:visibility="invisible" />
-
-    <com.synnapps.carouselview.CarouselView
-        android:id="@+id/loginCarouselView"
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/loginRecyclerView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_alignParentBottom="true"
-        android:layout_margin="20dp"
-        app:indicatorVisibility="gone"
-        android:layout_below="@id/txtTimer"/>
+        android:layout_marginBottom="4dp"
+        android:layout_marginTop="24dp"
+        android:layout_below="@id/OtpContainer"/>
 
     <RelativeLayout
         android:id="@+id/mainProgressBar"

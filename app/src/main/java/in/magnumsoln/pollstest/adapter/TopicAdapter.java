@@ -45,7 +45,8 @@ public class TopicAdapter extends RecyclerView.Adapter<TopicAdapter.TopicViewHol
         try{
             final String imageUrl = topics.get(position).getIMAGE_URL();
             //////
-
+            holder.textView.setText(topics.get(position).getTOPIC_NAME());
+            holder.textView.setVisibility(View.VISIBLE);
             Picasso.with(context)
                     .load(imageUrl)
                     .resize(2048, 1600).onlyScaleDown()
@@ -54,6 +55,7 @@ public class TopicAdapter extends RecyclerView.Adapter<TopicAdapter.TopicViewHol
                         @Override
                         public void onSuccess() {
                             holder.shimmer.setVisibility(View.GONE);
+                            holder.textView.setVisibility(View.GONE);
                         }
 
                         @Override
@@ -66,11 +68,13 @@ public class TopicAdapter extends RecyclerView.Adapter<TopicAdapter.TopicViewHol
                                         @Override
                                         public void onSuccess() {
                                             holder.shimmer.setVisibility(View.GONE);
+                                            holder.textView.setVisibility(View.GONE);
                                         }
 
                                         @Override
                                         public void onError() {
                                             holder.shimmer.setVisibility(View.GONE);
+                                            holder.textView.setVisibility(View.VISIBLE);
                                         }
                                     });
                         }
@@ -98,6 +102,7 @@ public class TopicAdapter extends RecyclerView.Adapter<TopicAdapter.TopicViewHol
                 public void onClick(View view) {
                     Intent intent = new Intent(context, CategoryActivity.class);
                     intent.putExtra("category_name", topics.get(position).getTOPIC_NAME());
+                    intent.putExtra("topic_share_url",topics.get(position).getSHARE_URL());
                     context.startActivity(intent);
                 }
             });

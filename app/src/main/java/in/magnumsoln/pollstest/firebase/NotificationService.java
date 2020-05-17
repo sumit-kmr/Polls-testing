@@ -64,7 +64,6 @@ public class NotificationService extends FirebaseMessagingService {
             intent.setAction("openPoll");
             PendingIntent pi = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
             NotificationCompat.Builder builder = new NotificationCompat.Builder(this, "notification")
-                    .setSmallIcon(R.drawable.tick)
                     .setContentTitle("New poll available!!")
                     .setContentText("Tap to open the poll")
                     .setColor(getColor(R.color.colorPrimaryDark))

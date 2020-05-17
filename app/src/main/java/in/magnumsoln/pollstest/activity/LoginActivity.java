@@ -57,9 +57,14 @@ import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import in.magnumsoln.pollstest.BuildConfig;
 import in.magnumsoln.pollstest.R;
+import in.magnumsoln.pollstest.adapter.LoginRecyclerAdapter;
 import in.magnumsoln.pollstest.util.InternetChecker;
+
+import static in.magnumsoln.pollstest.util.VersionChecker.isCompatibleVersion;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -81,7 +86,7 @@ public class LoginActivity extends AppCompatActivity {
     private String mMobileNumber;
     private SharedPreferences mSharedPreferences;
     boolean isLoggedIn;
-    private CarouselView carouselView;
+    private RecyclerView loginRecyclerView;
     private int[] images = {R.drawable.im1, R.drawable.im2, R.drawable.im3};
 
     @Override
@@ -97,7 +102,7 @@ public class LoginActivity extends AppCompatActivity {
         progressBarOtp = findViewById(R.id.progress_bar_otp);
         txtTimer = findViewById(R.id.txtTimer);
         mainProgressBar = findViewById(R.id.mainProgressBar);
-        carouselView = findViewById(R.id.loginCarouselView);
+        loginRecyclerView = findViewById(R.id.loginRecyclerView);
         context = this;
         currentActivity = this;
         mAuth = PhoneAuthProvider.getInstance();
@@ -109,7 +114,7 @@ public class LoginActivity extends AppCompatActivity {
         // check min_support_version of the app
         checkSupportedVersion();
 
-        setupCarouselView();
+        setupRecyclerView();
         disableMobileOkButton();
         disableOtpTextField();
         disableOtpOkButton();
@@ -140,22 +145,11 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
-    private void setupCarouselView() {
-        try {
-            carouselView.setViewListener(new ViewListener() {
-                @Override
-                public View setViewForPosition(int position) {
-                    View view = getLayoutInflater().inflate(R.layout.carouselview_layout_login, null);
-                    ImageView img = view.findViewById(R.id.carouselImgLogin);
-                    img.setImageDrawable(getDrawable(images[position]));
-                    return view;
-                }
-            });
-            carouselView.setPageCount(images.length);
-        }catch(Exception e){
-            e.printStackTrace();
-            Toast.makeText(context, "Some error occured", Toast.LENGTH_SHORT).show();
-        }
+    private void setupRecyclerView() {
+        int[] images = {R.drawable.im1,R.drawable.im2,R.drawable.im3};
+        LoginRecyclerAdapter adapter = new LoginRecyclerAdapter(this,images);
+        loginRecyclerView.setAdapter(adapter);
+        loginRecyclerView.setLayoutManager(new LinearLayoutManager(context,LinearLayoutManager.HORIZONTAL,false));
     }
 
     private void checkSupportedVersion() {
@@ -202,7 +196,7 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
-    private boolean isCompatibleVersion(String supportedVersion, String currentVersion) {
+    /*private boolean isCompatibleVersion(String supportedVersion, String currentVersion) {
         int x=supportedVersion.indexOf('.');
         int y=currentVersion.indexOf('.');
         int majorSupportedVersion=Integer.parseInt(supportedVersion.substring(0,x));
@@ -216,7 +210,7 @@ public class LoginActivity extends AppCompatActivity {
             return false;
 
         return true;
-    }
+    }*/
 
     private void setupOtpOkButton() {
         btnOtp.setOnClickListener(new View.OnClickListener() {
@@ -280,7 +274,7 @@ public class LoginActivity extends AppCompatActivity {
                 txtTimer.setVisibility(View.VISIBLE);
                 //txtResendOtp.setTextColor(getColor(R.color.grey));
                 //txtResendOtp.setEnabled(false);
-                btnResendOtp.setVisibility(View.INVISIBLE);
+                btnResendOtp.setVisibility(View.GONE);    ////
                 btnResendOtp.setEnabled(false);
                 new CountDownTimer(30000,1000){
 
@@ -288,13 +282,13 @@ public class LoginActivity extends AppCompatActivity {
                     public void onTick(long l) {
                         l /= 1000;
                         String seconds = ""+l;
-                        seconds = (seconds.length()==1) ? "0"+seconds : seconds;
-                        txtTimer.setText("00:"+seconds);
+//                        seconds = (seconds.length()==1) ? "0"+seconds : seconds;
+                        txtTimer.setText(seconds);
                     }
 
                     @Override
                     public void onFinish() {
-                        txtTimer.setVisibility(View.INVISIBLE);
+                        txtTimer.setVisibility(View.GONE);   ////
                        /* txtResendOtp.setEnabled(true);
                         txtResendOtp.setTextColor(Color.parseColor("#228B22"));
                         txtResendOtp.setOnClickListener(new View.OnClickListener() {
