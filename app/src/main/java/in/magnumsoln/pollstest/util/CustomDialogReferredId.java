@@ -2,6 +2,8 @@ package in.magnumsoln.pollstest.util;
 
 import android.app.Activity;
 import android.app.Dialog;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -51,6 +53,7 @@ public class CustomDialogReferredId extends Dialog implements android.view.View.
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.custom_dialog_referred_id);
+        getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         referIdContainer = findViewById(R.id.referIdContainer);
         edtReferId = findViewById(R.id.edtReferId);
         cancel_error = findViewById(R.id.btnErrorDismiss);

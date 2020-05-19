@@ -1,6 +1,9 @@
 package in.magnumsoln.pollstest.util;
 
+import com.google.firebase.firestore.FirebaseFirestore;
+
 public class VersionChecker {
+
     public static boolean isCompatibleVersion(String supportedVersion, String currentVersion) {
         try {
             int x = supportedVersion.indexOf('.');

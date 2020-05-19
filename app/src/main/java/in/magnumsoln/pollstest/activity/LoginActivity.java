@@ -62,9 +62,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import in.magnumsoln.pollstest.BuildConfig;
 import in.magnumsoln.pollstest.R;
 import in.magnumsoln.pollstest.adapter.LoginRecyclerAdapter;
-import in.magnumsoln.pollstest.util.InternetChecker;
-
-import static in.magnumsoln.pollstest.util.VersionChecker.isCompatibleVersion;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -111,9 +108,6 @@ public class LoginActivity extends AppCompatActivity {
         mSharedPreferences = getSharedPreferences("user_details", Context.MODE_PRIVATE);
         isLoggedIn =  mSharedPreferences.getBoolean("login", false);
 
-        // check min_support_version of the app
-        checkSupportedVersion();
-
         setupRecyclerView();
         disableMobileOkButton();
         disableOtpTextField();
@@ -126,25 +120,6 @@ public class LoginActivity extends AppCompatActivity {
         setupCallback();
     }
 
-    private void initializeAds() {
-        MobileAds.initialize(this);
-    }
-
-    private void setupNotificationChannel() {
-        try {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                int importance = NotificationManager.IMPORTANCE_DEFAULT;
-                NotificationChannel channel = new NotificationChannel("notification", "notification", importance);
-                NotificationManager notificationManager = getSystemService(NotificationManager.class);
-                notificationManager.createNotificationChannel(channel);
-            }
-            FirebaseMessaging.getInstance().subscribeToTopic("newPoll");
-        }catch(Exception e){
-            e.printStackTrace();
-            Toast.makeText(context, "Some error occured", Toast.LENGTH_SHORT).show();
-        }
-    }
-
     private void setupRecyclerView() {
         int[] images = {R.drawable.im1,R.drawable.im2,R.drawable.im3};
         LoginRecyclerAdapter adapter = new LoginRecyclerAdapter(this,images);
@@ -152,7 +127,7 @@ public class LoginActivity extends AppCompatActivity {
         loginRecyclerView.setLayoutManager(new LinearLayoutManager(context,LinearLayoutManager.HORIZONTAL,false));
     }
 
-    private void checkSupportedVersion() {
+    /*private void checkSupportedVersion() {
         try {
             if(!InternetChecker.isInternetAvailable(context)){
                 Toast.makeText(context, "No internet ", Toast.LENGTH_SHORT).show();
@@ -187,29 +162,12 @@ public class LoginActivity extends AppCompatActivity {
                         public void onFailure(@NonNull Exception e) {
                             Toast.makeText(context, "Some error occured", Toast.LENGTH_SHORT).show();
                             mainProgressBar.setVisibility(View.GONE);
-//                            finish();
                         }
                     });
         }catch(Exception e){
             e.printStackTrace();
             Toast.makeText(context, "Some error occured", Toast.LENGTH_SHORT).show();
         }
-    }
-
-    /*private boolean isCompatibleVersion(String supportedVersion, String currentVersion) {
-        int x=supportedVersion.indexOf('.');
-        int y=currentVersion.indexOf('.');
-        int majorSupportedVersion=Integer.parseInt(supportedVersion.substring(0,x));
-        int majorCurrentVersion=Integer.parseInt(currentVersion.substring(0,y));
-        int sprintCurrentVersion=Integer.parseInt(currentVersion.substring(x+1));
-        int sprintSupportedVersion=Integer.parseInt(supportedVersion.substring(y+1));
-
-        if(majorCurrentVersion<majorSupportedVersion)
-            return false;
-        else if(sprintCurrentVersion<sprintSupportedVersion)
-            return false;
-
-        return true;
     }*/
 
     private void setupOtpOkButton() {
@@ -259,7 +217,6 @@ public class LoginActivity extends AppCompatActivity {
                     Toast.makeText(context, "Internet unavailable", Toast.LENGTH_SHORT).show();
                     reset();
                 }
-//                edtMobile.setText("");
             }
             @Override
             public void onCodeSent(@NonNull String verificationId,
@@ -371,9 +328,8 @@ public class LoginActivity extends AppCompatActivity {
                                 mSharedPreferences.edit().putInt("available_coins", available_coins).apply();
                                 mSharedPreferences.edit().putString("phone_no", mob_no).apply();
                                 mSharedPreferences.edit().putBoolean("login", true).apply();
-                                updateDeviceId(queryDocumentSnapshots.getDocuments().get(0).getId());
-                                startActivity(new Intent(currentActivity, MainActivity.class));
-                                finish();
+                                updateDeviceIdAndLaunchActivity(queryDocumentSnapshots.getDocuments().get(0).getId());
+
                             }
                         }
                     })
@@ -391,7 +347,7 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
-    private void updateDeviceId(String docId) {
+    private void updateDeviceIdAndLaunchActivity(String docId) {
         try {
             String deviceId = Settings.Secure.getString(context.getContentResolver(), Settings.Secure.ANDROID_ID);
             mFirestore.collection("USER").document(docId).update("DEVICE_ID", deviceId).
@@ -399,6 +355,12 @@ public class LoginActivity extends AppCompatActivity {
                         @Override
                         public void onSuccess(Void aVoid) {
                             Log.w(TAG, "Device id updated successfully");
+                            Bundle splashBundle = getIntent().getBundleExtra("splash_bundle");
+                            Intent intent = new Intent(currentActivity, MainActivity.class);
+                            if(splashBundle != null)
+                                intent.putExtra("splash_bundle",splashBundle);
+                            startActivity(intent);
+                            finish();
                         }
                     })
                     .addOnFailureListener(new OnFailureListener() {
@@ -437,6 +399,9 @@ public class LoginActivity extends AppCompatActivity {
                             mSharedPreferences.edit().putString("phone_no", mMobileNumber).apply();
                             mSharedPreferences.edit().putBoolean("login", true).apply();
                             Toast.makeText(context, "Signed in successfully", Toast.LENGTH_SHORT).show();
+                            Bundle splashBundle = getIntent().getBundleExtra("splash_bundle");
+                            if(splashBundle != null)
+                                intent.putExtra("splash_bundle",splashBundle);
                             startActivity(intent);
                             finish();
                         }
@@ -555,24 +520,6 @@ public class LoginActivity extends AppCompatActivity {
        internetDialog.show();
     }
 
-    @Override
-    protected void onPause() {
-        if(internetDialog!=null && internetDialog.isShowing())
-            internetDialog.dismiss();
-        if(versionDialog!=null && versionDialog.isShowing())
-            versionDialog.dismiss();
-        super.onPause();
-    }
-
-    @Override
-    protected void onResume() {
-        if(internetDialog!=null && internetDialog.isShowing())
-            internetDialog.dismiss();
-        if(versionDialog!=null && versionDialog.isShowing())
-            versionDialog.dismiss();
-        checkSupportedVersion();
-        super.onResume();
-    }
 
     private void editTextTextChangeListener() {
         edtMobile.addTextChangedListener(new TextWatcher() {
@@ -700,11 +647,16 @@ public class LoginActivity extends AppCompatActivity {
         return super.dispatchTouchEvent(ev);
     }
 
-    public static void hideKeyboard(Activity activity) {
+    public void hideKeyboard(Activity activity) {
         if (activity != null && activity.getWindow() != null && activity.getWindow().getDecorView() != null) {
             InputMethodManager imm = (InputMethodManager) activity.getSystemService(Context.INPUT_METHOD_SERVICE);
             imm.hideSoftInputFromWindow(activity.getWindow().getDecorView().getWindowToken(), 0);
         }
+    }
+
+    @Override
+    public void onBackPressed() {
+        ActivityCompat.finishAffinity(this);
     }
 }
 

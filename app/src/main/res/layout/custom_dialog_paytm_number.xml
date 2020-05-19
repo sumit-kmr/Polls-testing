@@ -1,63 +1,72 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="300dp"
     android:layout_height="200dp"
-    android:orientation="vertical">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    app:cardCornerRadius="20dp">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Change paytm number"
-        android:fontFamily="@font/comfortaa_bold"
-        android:textSize="20sp"
-        android:textColor="#000"
-        android:layout_gravity="center_horizontal"
-        android:padding="10dp"
-        android:textStyle="bold"/>
-    <EditText
-        android:layout_width="match_parent"
-        android:layout_height="35dp"
-        android:background="@drawable/edit_text_background"
-        android:layout_marginStart="10dp"
-        android:layout_marginEnd="10dp"
-        android:layout_gravity="center_horizontal"
-        android:hint="Enter paytm number"
-        android:paddingStart="8dp"
-        android:fontFamily="@font/comfortaa_bold"
-        android:textColor="#000"
-        android:layout_marginTop="20dp"
-        android:id="@+id/edtChangePaytmNo"
-        android:inputType="number"
-        android:maxLength="10"/>
     <LinearLayout
+        android:layout_height="match_parent"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="25dp"
-        android:orientation="horizontal"
-        android:gravity="center">
+        android:orientation="vertical">
 
-        <Button
-            android:id="@+id/btnCancel"
+        <TextView
             android:layout_width="wrap_content"
-            android:layout_height="35dp"
-            android:background="@drawable/ok_button_background"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
             android:fontFamily="@font/comfortaa_bold"
-            android:text="Cancel"
-            android:textAllCaps="false"
-            android:textColor="#fff" />
+            android:padding="10dp"
+            android:text="Change paytm number"
+            android:textColor="#000"
+            android:textSize="20sp"
+            android:textStyle="bold" />
 
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="35dp"
-            android:text="Update"
-            android:background="@drawable/ok_button_background"
-            android:textAllCaps="false"
-            android:id="@+id/btnUpdate"
-            android:textColor="#fff"
+        <EditText
+            android:id="@+id/edtChangePaytmNo"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginEnd="10dp"
+            android:background="@drawable/edit_text_background"
             android:fontFamily="@font/comfortaa_bold"
-            android:layout_marginStart="40dp"
-            android:enabled="false"
-            android:foreground="@drawable/foreground_disabled"/>
+            android:hint="Enter paytm number"
+            android:inputType="number"
+            android:maxLength="10"
+            android:paddingStart="8dp"
+            android:textColor="#000" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="25dp"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/btnCancel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/ok_button_background"
+                android:fontFamily="@font/comfortaa_bold"
+                android:text="Cancel"
+                android:textAllCaps="false"
+                android:textColor="#fff" />
+
+            <Button
+                android:id="@+id/btnUpdate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="40dp"
+                android:background="@drawable/ok_button_background"
+                android:enabled="false"
+                android:fontFamily="@font/comfortaa_bold"
+                android:foreground="@drawable/foreground_disabled"
+                android:text="Update"
+                android:textAllCaps="false"
+                android:textColor="#fff" />
+        </LinearLayout>
+
     </LinearLayout>
-
-</LinearLayout>
+</androidx.cardview.widget.CardView>

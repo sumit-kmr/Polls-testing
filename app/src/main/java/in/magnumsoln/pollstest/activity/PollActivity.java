@@ -67,7 +67,7 @@ public class PollActivity extends AppCompatActivity implements RewardedVideoAdLi
     private RewardedVideoAd mAd;
     private LottieAnimationView tickA, tickB, tickC, tickD, tickE, tickF;
     private FloatingActionButton actionButton;
-
+    private boolean redirected;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -127,6 +127,7 @@ public class PollActivity extends AppCompatActivity implements RewardedVideoAdLi
         disabled_foreground_round = R.drawable.unlock_button_disabled_foreground;
         mFirestore = FirebaseFirestore.getInstance();
         currentPoll = (Poll) getIntent().getSerializableExtra("poll");
+        redirected = getIntent().getBooleanExtra("redirected",false);
         isPollUnlocked = mSharedPreference.getBoolean(currentPoll.getPOLL_ID(), false);
         adLimitsLeft = mSharedPreference.getInt("limit_remaining", 10);
         context = this;
@@ -1229,5 +1230,15 @@ public class PollActivity extends AppCompatActivity implements RewardedVideoAdLi
     @Override
     public void onRewardedVideoCompleted() {
 
+    }
+
+    @Override
+    public void onBackPressed() {
+        if(redirected) {
+            startActivity(new Intent(this, MainActivity.class));
+            finish();
+        }else{
+            super.onBackPressed();
+        }
     }
 }

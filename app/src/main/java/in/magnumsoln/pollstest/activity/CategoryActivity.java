@@ -28,6 +28,7 @@ public class CategoryActivity extends AppCompatActivity {
     private TextView txtTitle, coins;
     private SharedPreferences mSharedPreference;
     private FloatingActionButton floatingActionButton;
+    private boolean redirected;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,6 +45,7 @@ public class CategoryActivity extends AppCompatActivity {
         coins.setText("X " + mSharedPreference.getInt("available_coins", 10));
         title = getIntent().getStringExtra("category_name");
         share_url = getIntent().getStringExtra("topic_share_url");
+        redirected = getIntent().getBooleanExtra("redirected",false);
         txtTitle.setText(title);
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
@@ -90,4 +92,13 @@ public class CategoryActivity extends AppCompatActivity {
         coins.setText("X " + mSharedPreference.getInt("available_coins", 10));
     }
 
+    @Override
+    public void onBackPressed() {
+        if(redirected) {
+            startActivity(new Intent(this, MainActivity.class));
+            finish();
+        }else{
+            super.onBackPressed();
+        }
+    }
 }
