@@ -12,27 +12,30 @@
         android:layout_height="?android:attr/actionBarSize"
         android:background="#fff"
         android:elevation="1dp"
-        app:navigationIcon="@drawable/back_arrow"
         app:contentInsetLeft="0dp"
         app:contentInsetStart="0dp"
-        app:contentInsetStartWithNavigation="0dp">
+        app:contentInsetStartWithNavigation="0dp"
+        app:navigationIcon="@drawable/back_arrow">
+
         <RelativeLayout
             android:layout_width="wrap_content"
             android:layout_height="match_parent">
+
             <TextView
+                android:id="@+id/category_title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:id="@+id/category_title"
-                android:text="Title"
-                android:fontFamily="@font/comfortaa_bold"
-                android:textSize="20sp"
-                android:paddingEnd="2dp"
-                android:textColor="@color/colorPrimaryDark"
+                android:layout_alignParentStart="true"
                 android:layout_centerVertical="true"
-                android:maxLines="1"
+                android:layout_toStartOf="@id/imgCoin_category"
                 android:ellipsize="end"
-                android:layout_toLeftOf="@id/imgCoin_category"
-                android:layout_alignParentStart="true" />
+                android:fontFamily="@font/comfortaa_bold"
+                android:maxLines="1"
+                android:paddingEnd="2dp"
+                android:text="Title"
+                android:textColor="@color/colorPrimaryDark"
+                android:textSize="20sp" />
+
             <TextView
                 android:id="@+id/txtCoins_category"
                 android:layout_width="wrap_content"
@@ -40,6 +43,7 @@
                 android:layout_alignParentEnd="true"
                 android:layout_centerVertical="true"
                 android:layout_marginEnd="16dp"
+                android:layout_marginStart="8dp"
                 android:fontFamily="@font/comfortaa_bold"
                 android:text="X 100"
                 android:textColor="@color/colorPrimaryDark"
@@ -47,8 +51,8 @@
 
             <ImageView
                 android:id="@+id/imgCoin_category"
-                android:layout_width="wrap_content"
-                android:layout_height="20dp"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
                 android:layout_centerVertical="true"
                 android:layout_toStartOf="@id/txtCoins_category"
                 android:src="@drawable/coin" />
@@ -65,24 +69,24 @@
             android:id="@+id/tab_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:background="#fff"
             app:tabIndicatorColor="#25D368"
             app:tabIndicatorHeight="5dp"
-            app:tabRippleColor="@color/colorAccent"
-            android:background="#fff"/>
+            app:tabRippleColor="@color/colorAccent" />
 
     </androidx.viewpager.widget.ViewPager>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/actionButtonCategory"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
         android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
         android:layout_marginEnd="16dp"
         android:layout_marginBottom="32dp"
-        app:backgroundTint="@android:color/black"
-        android:src="@drawable/ic_share"
-        android:id="@+id/actionButtonCategory"
-        app:rippleColor="@android:color/white"
         android:clickable="true"
-        android:focusable="true"/>
+        android:focusable="true"
+        android:src="@drawable/ic_share"
+        app:backgroundTint="@android:color/black"
+        app:rippleColor="@android:color/white" />
 </RelativeLayout>

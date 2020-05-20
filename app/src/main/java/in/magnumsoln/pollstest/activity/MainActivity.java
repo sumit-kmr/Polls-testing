@@ -70,13 +70,13 @@ public class MainActivity extends AppCompatActivity {
                     Intent intent = new Intent(MainActivity.this, PollActivity.class);
                     intent.putExtra("poll", splashBundle.getSerializable("poll"));
                     intent.putExtra("poll_status", splashBundle.getString("poll_status"));
-                    intent.putExtra("redirected",true);
+                    intent.putExtra("redirected", true);
                     startActivity(intent);
                 } else if (type.equalsIgnoreCase("topic")) {
                     Intent intent = new Intent(MainActivity.this, CategoryActivity.class);
                     intent.putExtra("category_name", splashBundle.getString("category_name"));
                     intent.putExtra("topic_share_url", splashBundle.getString("topic_share_url"));
-                    intent.putExtra("redirected",true);
+                    intent.putExtra("redirected", true);
                     startActivity(intent);
                 }
             }
@@ -107,7 +107,8 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        fragmentManager.beginTransaction().replace(R.id.frame, dashboardFragment).commit();
+        if (!(fragmentManager.findFragmentById(R.id.frame) instanceof ProfileFragment))
+            fragmentManager.beginTransaction().replace(R.id.frame, dashboardFragment).commit();
         nCoins.setText("X " + mSharedPreferences.getInt("available_coins", 10));
     }
 

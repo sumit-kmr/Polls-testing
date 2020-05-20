@@ -45,6 +45,7 @@
                 android:layout_alignParentEnd="true"
                 android:layout_centerVertical="true"
                 android:layout_marginEnd="16dp"
+                android:layout_marginStart="8dp"
                 android:fontFamily="@font/comfortaa_bold"
                 android:text="X 100"
                 android:textColor="@color/colorPrimaryDark"
@@ -52,8 +53,8 @@
 
             <ImageView
                 android:id="@+id/imgCoin"
-                android:layout_width="wrap_content"
-                android:layout_height="20dp"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
                 android:layout_centerVertical="true"
                 android:layout_toStartOf="@id/txtCoins"
                 android:src="@drawable/coin" />
