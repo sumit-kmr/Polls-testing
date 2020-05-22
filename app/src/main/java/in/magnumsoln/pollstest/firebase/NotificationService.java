@@ -97,8 +97,8 @@ public class NotificationService extends FirebaseMessagingService {
                                 correct_option,
                                 reward_amount);
                         if (notificationType.equalsIgnoreCase("newPoll")) {
-                            title = "New poll available!!";
-                            details = "Tap to open the poll";
+                            title = poll.getQUESTION();
+                            details = "Vote now";
                         } else {
                             title = data.get("title");
                             details = data.get("detail");
@@ -173,11 +173,11 @@ public class NotificationService extends FirebaseMessagingService {
                     .setContentTitle(title)
                     .setContentText(detail)
                     .setSmallIcon(R.drawable.ic_notification)
-                    .setColor(getColor(R.color.colorPrimaryDark))
                     .setContentIntent(pi)
                     .setAutoCancel(true);
             NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-            notificationManager.notify(0, builder.build());
+            int randomId = (int) ((new Date().getTime() / 1000L) % Integer.MAX_VALUE);
+            notificationManager.notify(randomId, builder.build());
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -199,7 +199,6 @@ public class NotificationService extends FirebaseMessagingService {
                     .setContentTitle(title)
                     .setContentText(detail)
                     .setSmallIcon(R.drawable.ic_notification)
-                    .setColor(getColor(R.color.colorPrimaryDark))
                     .setContentIntent(pi)
                     .setAutoCancel(true)
                     .setLargeIcon(bitmap)
@@ -207,7 +206,8 @@ public class NotificationService extends FirebaseMessagingService {
                             .bigPicture(bitmap)
                             .bigLargeIcon(null));
             NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-            notificationManager.notify(0, builder.build());
+            int randomId = (int) ((new Date().getTime() / 1000L) % Integer.MAX_VALUE);
+            notificationManager.notify(randomId, builder.build());
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -229,7 +229,6 @@ public class NotificationService extends FirebaseMessagingService {
                     .setContentTitle(title)
                     .setContentText(details)
                     .setSmallIcon(R.drawable.ic_notification)
-                    .setColor(getColor(R.color.colorPrimaryDark))
                     .setContentIntent(pi)
                     .setAutoCancel(true)
                     .setLargeIcon(bitmap)
@@ -237,7 +236,8 @@ public class NotificationService extends FirebaseMessagingService {
                             .bigPicture(bitmap)
                             .bigLargeIcon(null));
             NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-            notificationManager.notify(0, builder.build());
+            int randomId = (int) ((new Date().getTime() / 1000L) % Integer.MAX_VALUE);
+            notificationManager.notify(randomId, builder.build());
         } catch (Exception e) {
             e.printStackTrace();
         }

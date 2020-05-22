@@ -21,7 +21,10 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.google.android.gms.ads.MobileAds;
@@ -51,7 +54,7 @@ public class SplashActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_splash);
+//        setContentView(R.layout.activity_splash);
         mSharedPreferences = getSharedPreferences("user_details", Context.MODE_PRIVATE);
         mFirestore = FirebaseFirestore.getInstance();
         context = this;
@@ -189,6 +192,9 @@ public class SplashActivity extends AppCompatActivity {
                             // Get deep link from result (may be null if no link is found)
                             if (pendingDynamicLinkData == null){
                                 if (isLoggedIn) {
+                                    String mob_no = mSharedPreferences.getString("phone_no",null);
+                                    if(mob_no != null)
+                                        FirebaseMessaging.getInstance().subscribeToTopic(mob_no);
                                     Intent intent = new Intent(context,MainActivity.class);
                                     startActivity(intent);
                                     finish();

@@ -328,6 +328,7 @@ public class LoginActivity extends AppCompatActivity {
                                 mSharedPreferences.edit().putInt("available_coins", available_coins).apply();
                                 mSharedPreferences.edit().putString("phone_no", mob_no).apply();
                                 mSharedPreferences.edit().putBoolean("login", true).apply();
+                                FirebaseMessaging.getInstance().subscribeToTopic(mob_no);
                                 updateDeviceIdAndLaunchActivity(queryDocumentSnapshots.getDocuments().get(0).getId());
 
                             }
@@ -394,6 +395,7 @@ public class LoginActivity extends AppCompatActivity {
                     .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
                         @Override
                         public void onSuccess(DocumentReference documentReference) {
+                            FirebaseMessaging.getInstance().subscribeToTopic(mMobileNumber);
                             Intent intent = new Intent(currentActivity, MainActivity.class);
                             mSharedPreferences.edit().putInt("available_coins", 10).apply();
                             mSharedPreferences.edit().putString("phone_no", mMobileNumber).apply();
