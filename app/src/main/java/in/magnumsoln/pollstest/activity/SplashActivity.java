@@ -6,6 +6,7 @@ import in.magnumsoln.pollstest.BuildConfig;
 import in.magnumsoln.pollstest.R;
 import in.magnumsoln.pollstest.model.Poll;
 import in.magnumsoln.pollstest.util.InternetChecker;
+import in.magnumsoln.pollstest.ContractClass;
 
 import android.app.Dialog;
 import android.app.NotificationChannel;
@@ -175,7 +176,7 @@ public class SplashActivity extends AppCompatActivity {
         update.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store")));
+                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(ContractClass.APP_SHARE_URL)));
                 dialog.dismiss();
             }
         });

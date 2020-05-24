@@ -31,6 +31,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+import in.magnumsoln.pollstest.ContractClass;
 import in.magnumsoln.pollstest.R;
 import in.magnumsoln.pollstest.util.CustomDialogChangePaytmNumber;
 import in.magnumsoln.pollstest.util.CustomDialogReferredId;
@@ -100,9 +101,9 @@ public class ProfileFragment extends Fragment
             @Override
             public void onClick(View view) {
                 try {
-                    startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=in.magnumsoln.polls")));
+                    startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id="+ ContractClass.PACKAGE_NAME)));
                 } catch (android.content.ActivityNotFoundException anfe) {
-                    startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=in.magnumsoln.polls")));
+                    startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(ContractClass.APP_SHARE_URL)));
                 }
             }
         });
@@ -210,7 +211,7 @@ public class ProfileFragment extends Fragment
                     Intent shareIntent = new Intent(Intent.ACTION_SEND);
                     shareIntent.setType("text/plain");
                     shareIntent.putExtra(Intent.EXTRA_SUBJECT, "Polls");
-                    String shareMessage = "Predict and win Paytm cash. Download Polls\n\n https://play.google.com/store/apps/details?id=in.magnumsoln.polls \n\n";
+                    String shareMessage = "Predict and win Paytm cash. Download Polls\n\n"+ContractClass.APP_SHARE_URL+"\n\n";
                     shareIntent.putExtra(Intent.EXTRA_TEXT, shareMessage);
                     startActivity(Intent.createChooser(shareIntent, "Share using:"));
                 } catch (Exception e) {
@@ -228,7 +229,7 @@ public class ProfileFragment extends Fragment
                     Intent shareIntent = new Intent(Intent.ACTION_SEND);
                     shareIntent.setType("text/plain");
                     shareIntent.putExtra(Intent.EXTRA_SUBJECT, "Polls");
-                    String shareMessage = "Predict and win Paytm cash. Download Polls\n\n https://play.google.com/store/apps/details?id=in.magnumsoln.polls \n\n";
+                    String shareMessage = "Predict and win Paytm cash. Download Polls\n\n"+ContractClass.APP_SHARE_URL+"\n\n";
                     shareMessage = shareMessage + "Use refer ID " + reg_ph + " to get referral bonus.";
                     shareIntent.putExtra(Intent.EXTRA_TEXT, shareMessage);
                     startActivity(Intent.createChooser(shareIntent, "Share using:"));

@@ -52,7 +52,6 @@ public class PollFetcher {
                                     Timestamp close = (Timestamp) documentSnapshot.get("CLOSE_TIME");
                                     Timestamp declare = (Timestamp) documentSnapshot.get("DECLARE_TIME");
                                     if ((close == null) || (close.toDate().after(currentDate))) {
-                                        Log.w("inside for"," nsjnfs");
                                         Date start_ = start.toDate();
                                         Date close_ = (close == null) ? null : close.toDate();
                                         Date declare_ = (declare == null) ? null : declare.toDate();

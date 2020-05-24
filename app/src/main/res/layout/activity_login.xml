@@ -133,7 +133,10 @@
         android:layout_below="@id/OtpContainer"
         android:layout_alignParentBottom="true"
         android:layout_marginTop="24dp"
-        android:layout_marginBottom="4dp" />
+        android:layout_marginBottom="8dp"
+        android:scrollbars="horizontal"
+        android:scrollbarSize="1dp"
+        android:fadeScrollbars="false"/>
 
     <RelativeLayout
         android:id="@+id/mainProgressBar"

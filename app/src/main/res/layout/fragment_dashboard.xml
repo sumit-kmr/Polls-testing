@@ -43,7 +43,9 @@
                     android:layout_height="wrap_content"
                     android:scrollbars="horizontal"
                     android:layout_marginTop="8dp"
-                    android:scrollbarThumbHorizontal="@color/colorAccent"/>
+                    android:scrollbarThumbHorizontal="@color/colorAccent"
+                    android:fadeScrollbars="false"
+                    android:scrollbarSize="1dp"/>
 
                 <RelativeLayout
                     android:layout_width="match_parent"

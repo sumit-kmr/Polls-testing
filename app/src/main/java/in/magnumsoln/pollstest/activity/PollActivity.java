@@ -41,6 +41,7 @@ import java.util.List;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import in.magnumsoln.pollstest.ContractClass;
 import in.magnumsoln.pollstest.R;
 import in.magnumsoln.pollstest.model.Poll;
 import in.magnumsoln.pollstest.util.BlurBuilder;
@@ -121,7 +122,7 @@ public class PollActivity extends AppCompatActivity implements RewardedVideoAdLi
         actionButton = findViewById(R.id.actionButtonPoll);
         mAd = MobileAds.getRewardedVideoAdInstance(this);
         mAd.setRewardedVideoAdListener(this);
-        mAd.loadAd("ca-app-pub-3940256099942544/5224354917", new AdRequest.Builder().build());
+        mAd.loadAd(ContractClass.REWARD_VIDEO_AD_ID, new AdRequest.Builder().build());
         videoAdCreditDisplayer = findViewById(R.id.video_ad_credits_left);
         disabled_foreground = R.drawable.foreground_disabled;
         disabled_foreground_round = R.drawable.unlock_button_disabled_foreground;
@@ -1180,7 +1181,7 @@ public class PollActivity extends AppCompatActivity implements RewardedVideoAdLi
 
     @Override
     public void onRewardedVideoAdClosed() {
-        mAd.loadAd("ca-app-pub-3940256099942544/5224354917", new AdRequest.Builder().build());
+        mAd.loadAd(ContractClass.REWARD_VIDEO_AD_ID, new AdRequest.Builder().build());
     }
 
     @Override

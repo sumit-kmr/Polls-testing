@@ -294,7 +294,6 @@ public class LoginActivity extends AppCompatActivity {
                         public void onFailure(@NonNull Exception e) {
 //                        Toast.makeText(context, "Some error occuredABC", Toast.LENGTH_SHORT).show();
                             Toast.makeText(context, "Invalid OTP", Toast.LENGTH_SHORT).show();
-                            System.out.println("B");
                             hideOtpProgressBar();
                             showOtpOkButton();
                             enableOtpOkButton();
@@ -461,67 +460,6 @@ public class LoginActivity extends AppCompatActivity {
             Toast.makeText(context, "Some error occured", Toast.LENGTH_SHORT).show();
         }
     }
-    AlertDialog versionDialog;
-    private void showVersionAlertDialog(){
-       final AlertDialog.Builder builder = new AlertDialog.Builder(context);
-       builder.setTitle("Error");
-       builder.setMessage("The app you are using is no longer supported.Please update and try again");
-       builder.setPositiveButton("Update", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        try {
-                            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store")));
-                            new Handler().postDelayed(new Runnable() {
-                                @Override
-                                public void run() {
-                                    ActivityCompat.finishAffinity(LoginActivity.this);
-                                }
-                            },200);
-                        }
-                        catch (Exception e) {
-                            Toast.makeText(context,"Unable to open play store",Toast.LENGTH_SHORT).show();
-                            ActivityCompat.finishAffinity(LoginActivity.this);
-                            System.exit(0);
-                        }
-                    }
-                });
-       versionDialog = builder.create();
-       versionDialog.setCancelable(false);
-       versionDialog.setCanceledOnTouchOutside(false);
-       versionDialog.show();
-    }
-    AlertDialog internetDialog;
-    private void showInternetDialog(){
-       final AlertDialog.Builder builder = new AlertDialog.Builder(context);
-       builder.setTitle("Error");
-       builder.setMessage("This app requires internet connection");
-       builder.setPositiveButton("Settings", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        // open internet settings
-                        Intent intent = new Intent(Settings.ACTION_WIRELESS_SETTINGS);
-                        startActivity(intent);
-                    }
-                });
-       builder.setNegativeButton("Exit", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        // exit the app
-                        Toast.makeText(context, "Closing app...", Toast.LENGTH_SHORT).show();
-                        new Handler().postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-                                ActivityCompat.finishAffinity(LoginActivity.this);
-                            }
-                        },800);
-                    }
-                });
-       internetDialog = builder.create();
-       internetDialog.setCancelable(false);
-       internetDialog.setCanceledOnTouchOutside(false);
-       internetDialog.show();
-    }
-
 
     private void editTextTextChangeListener() {
         edtMobile.addTextChangedListener(new TextWatcher() {

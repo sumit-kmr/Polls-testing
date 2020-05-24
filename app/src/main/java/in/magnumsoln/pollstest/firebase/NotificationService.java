@@ -37,7 +37,6 @@ import in.magnumsoln.pollstest.activity.SplashActivity;
 import in.magnumsoln.pollstest.model.Poll;
 
 public class NotificationService extends FirebaseMessagingService {
-    Bitmap imageBitmap = null;
     String status = "", title = "", details = "";
 
     @Override
